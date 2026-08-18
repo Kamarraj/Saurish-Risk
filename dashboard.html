@@ -1,0 +1,3039 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saurish Risk - Ultimate Trading Terminal v3.0</title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { gold: '#D4AF37', dark: '#0b0f19', card: '#111827', border: '#1f293d' },
+            funded: { blue: '#1a56db', dark: '#0f172a', card: '#1e293b', border: '#334155' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0b0f19;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: #1a1f2e;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #D4AF37;
+      border-radius: 10px;
+    }
+    .glass-effect {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      border-color: #D4AF37;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+    }
+    .tab-active {
+      background: rgba(212, 175, 55, 0.12);
+      color: #D4AF37;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+    }
+    .tab-inactive {
+      color: #94a3b8;
+    }
+    .tab-inactive:hover {
+      background: rgba(30, 41, 59, 0.6);
+      color: #f1f5f9;
+    }
+    .page-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .page-section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-dot.online {
+      background: #34d399;
+      box-shadow: 0 0 10px #34d399;
+    }
+    .status-dot.offline {
+      background: #ef4444;
+      box-shadow: 0 0 10px #ef4444;
+    }
+    .status-dot.warning {
+      background: #f59e0b;
+      box-shadow: 0 0 10px #f59e0b;
+    }
+    .pulse-gold {
+      animation: pulseGold 2s ease-in-out infinite;
+    }
+    @keyframes pulseGold {
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+      }
+    }
+    .trust-badge {
+      background: linear-gradient(135deg, #1a2a3a, #0f1a2a);
+      border: 1px solid #2a3a4a;
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease;
+    }
+    .impact-high {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+    .impact-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border-color: #f59e0b;
+    }
+    .impact-low {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+      border-color: #eab308;
+    }
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: #1a1f2e;
+      border: 1px solid #2a2f3e;
+      min-width: 280px;
+      max-width: 400px;
+      animation: slideInRight 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .toast.success {
+      border-color: #34d399;
+    }
+    .toast.warning {
+      border-color: #f59e0b;
+    }
+    .toast.error {
+      border-color: #ef4444;
+    }
+    .toast.info {
+      border-color: #60a5fa;
+    }
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    .theme-toggle {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .theme-toggle:hover {
+      transform: rotate(30deg);
+    }
+    .ticker-up {
+      color: #22c55e;
+    }
+    .ticker-down {
+      color: #ef4444;
+    }
+    .glow-gold {
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+    }
+    .border-glow-gold {
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.05);
+    }
+    .hover-scale {
+      transition: transform 0.2s ease;
+    }
+    .hover-scale:hover {
+      transform: scale(1.02);
+    }
+    .news-row {
+      transition: all 0.2s ease;
+    }
+    .news-row:hover {
+      background: rgba(212, 175, 55, 0.05);
+      border-color: rgba(212, 175, 55, 0.2);
+    }
+    .data-source-badge {
+      background: rgba(212, 175, 55, 0.12);
+      color: #D4AF37;
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .live-indicator {
+      animation: blink 1s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .checkout-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .checkout-overlay.open {
+      display: flex;
+    }
+    .checkout-container {
+      width: 100%;
+      max-width: 1100px;
+      max-height: 95vh;
+      overflow-y: auto;
+      padding: 20px;
+      scrollbar-width: thin;
+    }
+    .checkout-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .checkout-container::-webkit-scrollbar-track {
+      background: #1a1f2e;
+    }
+    .checkout-container::-webkit-scrollbar-thumb {
+      background: #D4AF37;
+      border-radius: 10px;
+    }
+    .checkout-card {
+      background: linear-gradient(145deg, #1a1f2e, #111827);
+      border: 1px solid #2a2f3e;
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .payment-method {
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid #334155;
+      background: rgba(30, 41, 59, 0.3);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .payment-method:hover {
+      border-color: #D4AF37;
+      transform: translateY(-2px);
+    }
+    .payment-method-active {
+      border-color: #D4AF37;
+      background: rgba(212, 175, 55, 0.08);
+    }
+    .plan-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .plan-card.popular {
+      border: 2px solid #D4AF37;
+      position: relative;
+    }
+    .plan-card.popular::before {
+      content: '⭐ POPULAR';
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background: #D4AF37;
+      color: #000;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    .step-dot.active {
+      background: #D4AF37;
+      color: #000;
+    }
+    .step-dot.completed {
+      background: #22c55e;
+      color: #000;
+    }
+    .step-dot.inactive {
+      background: #1e293b;
+      color: #64748b;
+    }
+    .step-line {
+      height: 2px;
+      width: 40px;
+      background: #1e293b;
+    }
+    .step-line.completed {
+      background: #22c55e;
+    }
+    .checkout-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      background: #D4AF37;
+      color: #000;
+      font-weight: 800;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .checkout-btn:hover {
+      opacity: 0.9;
+    }
+    .checkout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-slate-100 font-sans antialiased min-h-screen flex selection:bg-brand-gold selection:text-black">
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ========================================== -->
+  <!-- SIDEBAR - Desktop Navigation               -->
+  <!-- ========================================== -->
+  <aside class="w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between hidden md:flex z-20 sticky top-0 h-screen overflow-y-auto scrollbar-thin">
+    <div class="p-6">
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="bg-brand-gold/10 p-2.5 rounded-2xl border border-brand-gold/20 shadow-inner">
+          <span class="text-brand-gold font-black text-xl">S</span>
+        </div>
+        <div>
+          <span class="text-sm font-black tracking-wider text-white block">SAURISH</span>
+          <span class="text-[10px] tracking-widest text-brand-gold font-bold uppercase">Terminal v3.0</span>
+        </div>
+      </div>
+
+      <nav class="space-y-1.5" id="sidebar-nav">
+        <a href="#" onclick="switchTab('dashboard')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-active text-xs font-medium transition" data-tab="dashboard">
+          <span>📊</span><span>Dashboard</span>
+        </a>
+        <a href="#" onclick="switchTab('calculator')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition" data-tab="calculator">
+          <span>🧮</span><span>Risk Calculator</span>
+        </a>
+        <a href="#" onclick="switchTab('journal')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition" data-tab="journal">
+          <span>📝</span><span>Trade Journal</span>
+        </a>
+        <a href="#" onclick="switchTab('guardian')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition" data-tab="guardian">
+          <span>🛡️</span><span>Prop Guardians</span>
+        </a>
+        <a href="#" onclick="switchTab('challenges')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition" data-tab="challenges">
+          <span>🏆</span><span>Challenge Tracker</span>
+        </a>
+        <a href="#" onclick="switchTab('analytics')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition" data-tab="analytics">
+          <span>📈</span><span>Advanced Stats</span>
+        </a>
+        <a href="#" onclick="openAccountManagerModal()" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition cursor-pointer" data-tab="accounts">
+          <span>👥</span><span>Multi-Account</span>
+        </a>
+        <a href="#" onclick="switchTab('settings')" class="flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition" data-tab="settings">
+          <span>⚙️</span><span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-6 border-t border-brand-border space-y-4">
+      <!-- UPGRADE BUTTON - SIDEBAR -->
+      <div onclick="openCheckoutModal()" class="bg-gradient-to-r from-amber-500/10 to-brand-gold/10 border border-brand-gold/30 p-4 rounded-xl cursor-pointer hover:border-brand-gold transition shadow-lg group">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-bold text-brand-gold group-hover:underline">Upgrade Pro</span>
+          <span class="text-[9px] bg-brand-gold text-black font-extrabold px-1.5 py-0.5 rounded tracking-wide">PRO</span>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">Unlock prop firm sync, multi-account management & uncapped risk limits.</p>
+      </div>
+      <button onclick="logoutUser()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-brand-border text-xs text-rose-400 hover:bg-rose-500/10 transition font-semibold flex items-center justify-center gap-2">
+        <span>🚪</span> Log Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- MAIN CONTENT                               -->
+  <!-- ========================================== -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+    <!-- Top Header -->
+    <header class="glass-effect sticky top-0 border-b border-brand-border px-6 md:px-8 py-4 flex flex-wrap items-center justify-between gap-4 z-10">
+      <div>
+        <h1 class="text-xl font-black text-white flex items-center gap-2">
+          <span id="page-title">Dashboard</span> <span class="text-lg">⚡</span>
+        </h1>
+        <p class="text-xs text-slate-400 mt-0.5">Plan: <span id="user-plan-badge" class="font-bold text-slate-400">Free Tier 🛡️</span></p>
+      </div>
+
+      <div class="flex items-center gap-4 flex-wrap">
+
+        <div id="session-indicator" class="hidden md:flex items-center gap-2 bg-slate-900 border border-brand-border px-3 py-1.5 rounded-xl text-xs">
+          <span class="text-slate-400">🕐</span>
+          <span id="session-text" class="text-emerald-400 font-medium">London • NY Active</span>
+        </div>
+
+        <!-- MT5 Status -->
+        <div id="mt5-status-badge" class="hidden sm:flex items-center gap-2 bg-slate-900 border border-brand-border px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400">
+          <span id="mt5-status-dot" class="status-dot online"></span>
+          <span id="mt5-status-text">MT5 Connected</span>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" class="theme-toggle text-slate-400 hover:text-brand-gold text-base" title="Toggle Theme">🌓</button>
+
+        <!-- Account Switcher -->
+        <div class="flex items-center gap-2 bg-slate-900 border border-brand-border px-3 py-1.5 rounded-xl">
+          <span class="text-xs text-slate-400">Active:</span>
+          <select id="header-account-switcher" onchange="switchActiveAccount(this.value)" class="bg-transparent text-xs font-bold text-brand-gold focus:outline-none cursor-pointer max-w-[140px]"></select>
+          <button onclick="openAccountManagerModal()" class="text-xs bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 px-2 py-1 rounded-lg border border-brand-gold/20 transition ml-1">+</button>
+        </div>
+
+        <!-- UPGRADE BUTTON - HEADER -->
+        <button onclick="openCheckoutModal()" id="upgrade-top-btn" class="bg-gradient-to-r from-amber-500 to-brand-gold text-black font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:opacity-90 transition flex items-center gap-1.5 animate-pulse shrink-0">
+          <span>👑</span> Upgrade
+        </button>
+      </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- PAGE: DASHBOARD                            -->
+    <!-- ========================================== -->
+    <div id="page-dashboard" class="page-section active">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+          <div class="bg-brand-card border border-brand-border p-4 rounded-xl text-center card-hover">
+            <p class="text-[10px] text-slate-400">🏆 Win Streak</p>
+            <p id="streak-win" class="text-xl font-black text-emerald-400">0</p>
+          </div>
+          <div class="bg-brand-card border border-brand-border p-4 rounded-xl text-center card-hover">
+            <p class="text-[10px] text-slate-400">📉 Loss Streak</p>
+            <p id="streak-loss" class="text-xl font-black text-rose-400">0</p>
+          </div>
+          <div class="bg-brand-card border border-brand-border p-4 rounded-xl text-center card-hover">
+            <p class="text-[10px] text-slate-400">📊 Total Trades</p>
+            <p id="quick-total-trades" class="text-xl font-black text-white">0</p>
+          </div>
+          <div class="bg-brand-card border border-brand-border p-4 rounded-xl text-center card-hover">
+            <p class="text-[10px] text-slate-400">📈 Sharpe Ratio</p>
+            <p id="quick-sharpe" class="text-xl font-black text-brand-gold">0.00</p>
+          </div>
+          <div class="bg-brand-card border border-brand-border p-4 rounded-xl text-center card-hover">
+            <p class="text-[10px] text-slate-400">💚 Best Day</p>
+            <p id="quick-best-day" class="text-xl font-black text-emerald-400">$0</p>
+          </div>
+          <div class="bg-brand-card border border-brand-border p-4 rounded-xl text-center card-hover">
+            <p class="text-[10px] text-slate-400">❤️ Worst Day</p>
+            <p id="quick-worst-day" class="text-xl font-black text-rose-400">$0</p>
+          </div>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-gradient-to-br from-brand-card to-slate-900/80 border border-brand-border p-5 rounded-2xl shadow-sm card-hover">
+            <p class="text-xs text-slate-400 font-medium">💰 Current Equity</p>
+            <h3 id="metric-equity" class="text-2xl font-black text-white mt-1.5">$50,000.00</h3>
+            <div class="flex items-center justify-between mt-3 pt-3 border-t border-brand-border/60 text-xs">
+              <span class="text-slate-500">Start: <span id="metric-start-bal" class="text-slate-300 font-medium">$50,000</span></span>
+              <span id="metric-net-pnl" class="font-bold text-emerald-400">+$0.00 (0.00%)</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-brand-card to-slate-900/80 border border-brand-border p-5 rounded-2xl shadow-sm card-hover">
+            <div class="flex justify-between items-start">
+              <p class="text-xs text-slate-400 font-medium">📊 Daily Buffer (8%)</p>
+              <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold">SAFE</span>
+            </div>
+            <h3 id="metric-daily-buffer" class="text-2xl font-black text-white mt-1.5">$4,000.00</h3>
+            <div class="flex items-center justify-between mt-3 pt-3 border-t border-brand-border/60 text-xs">
+              <span class="text-slate-500">Max: <span id="metric-max-allowed" class="text-slate-300 font-medium">$4,000.00</span></span>
+              <span class="text-slate-400">Used: $0.00</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-brand-card to-slate-900/80 border border-brand-border p-5 rounded-2xl shadow-sm card-hover">
+            <div class="flex justify-between items-start">
+              <p class="text-xs text-slate-400 font-medium">🛡️ Per Trade Max Risk</p>
+              <span id="risk-cap-badge-label" class="text-[9px] bg-rose-500/20 text-rose-400 px-1.5 py-0.5 rounded font-bold">$250 CAP</span>
+            </div>
+            <h3 id="top-card-max-risk" class="text-2xl font-black text-white mt-1.5">$250.00</h3>
+            <div class="mt-3 pt-3 border-t border-brand-border/60 text-xs">
+              <span id="risk-cap-desc" class="text-[11px] text-slate-400 font-medium">Basic Risk: Capped at $250</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-brand-card to-slate-900/80 border border-brand-border p-5 rounded-2xl shadow-sm card-hover">
+            <p class="text-xs text-slate-400 font-medium">🎯 Win Rate</p>
+            <h3 id="metric-winrate" class="text-2xl font-black text-white mt-1.5">0.0%</h3>
+            <div class="mt-3 pt-3 border-t border-brand-border/60 text-xs">
+              <span id="metric-trade-count" class="text-slate-400 font-medium">No Trades Yet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Analytics -->
+        <div class="bg-brand-card border border-brand-border p-5 rounded-2xl shadow-sm border-glow-gold">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div class="flex items-center space-x-2"><span class="text-base">📈</span><h3 class="text-sm font-bold text-white glow-gold">Performance Analytics</h3></div>
+            <div class="flex gap-2 flex-wrap">
+              <select id="time-filter" onchange="updateDashboard()" class="bg-slate-900 border border-brand-border rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-brand-gold">
+                <option value="all">All Time</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="quarter">This Quarter</option>
+              </select>
+              <button onclick="exportTradesToCSV()" class="text-[11px] bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-brand-border transition font-semibold">⬇️ CSV</button>
+              <button onclick="exportFullReport()" class="text-[11px] bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-brand-border transition font-semibold">📄 Report</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
+            <div class="bg-slate-900/60 rounded-xl p-3 border border-brand-border/60 hover:border-brand-gold/40 transition"><p class="text-[10px] text-slate-400 font-medium">Avg Win</p><p id="perf-avg-win" class="text-sm font-bold text-emerald-400 mt-1 font-mono">$0.00</p></div>
+            <div class="bg-slate-900/60 rounded-xl p-3 border border-brand-border/60 hover:border-brand-gold/40 transition"><p class="text-[10px] text-slate-400 font-medium">Avg Loss</p><p id="perf-avg-loss" class="text-sm font-bold text-rose-400 mt-1 font-mono">$0.00</p></div>
+            <div class="bg-slate-900/60 rounded-xl p-3 border border-brand-border/60 hover:border-brand-gold/40 transition"><p class="text-[10px] text-slate-400 font-medium">Profit Factor</p><p id="perf-profit-factor" class="text-sm font-bold text-white mt-1 font-mono">0.00</p></div>
+            <div class="bg-slate-900/60 rounded-xl p-3 border border-brand-border/60 hover:border-brand-gold/40 transition"><p class="text-[10px] text-slate-400 font-medium">Best Trade</p><p id="perf-best-trade" class="text-sm font-bold text-emerald-400 mt-1 font-mono">$0.00</p></div>
+            <div class="bg-slate-900/60 rounded-xl p-3 border border-brand-border/60 hover:border-brand-gold/40 transition"><p class="text-[10px] text-slate-400 font-medium">Worst Trade</p><p id="perf-worst-trade" class="text-sm font-bold text-rose-400 mt-1 font-mono">$0.00</p></div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-brand-border/60">
+            <p class="text-xs text-slate-400 font-medium mb-3">📊 Monthly Performance</p>
+            <div id="monthly-chart" class="flex items-end gap-2 h-24"></div>
+          </div>
+        </div>
+
+        <!-- Drawdown Guardian - PRO feature -->
+        <div id="drawdown-guardian-container" class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm space-y-6 relative overflow-hidden transition border-glow-gold">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2"><span class="text-base">📉</span><h3 class="text-base font-bold text-white glow-gold">Prop Firm Drawdown Guardian</h3></div>
+            <div id="drawdown-lock-badge" class="text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 font-bold">Locked (Free)</div>
+          </div>
+          <div id="drawdown-content-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-brand-border/60 hover:border-brand-gold/30 transition">
+              <div class="flex justify-between text-xs font-semibold"><span class="text-slate-300">Trailing Drawdown (8%)</span><span id="trailing-dd-val" class="text-brand-gold font-mono">$0.00 / $4,000.00</span></div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden"><div id="trailing-dd-bar" class="bg-emerald-500 h-full rounded-full transition-all" style="width:0%"></div></div>
+              <div class="flex justify-between text-[11px] text-slate-500 pt-1"><span>High Watermark: <strong id="high-watermark" class="text-slate-300">$50,000.00</strong></span><span id="trailing-status" class="text-emerald-400 font-semibold">SAFE</span></div>
+            </div>
+            <div class="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-brand-border/60 hover:border-brand-gold/30 transition">
+              <div class="flex justify-between text-xs font-semibold"><span class="text-slate-300">Max Drawdown (10%)</span><span id="overall-dd-val" class="text-brand-gold font-mono">$0.00 / $5,000.00</span></div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden"><div id="overall-dd-bar" class="bg-emerald-500 h-full rounded-full transition-all" style="width:0%"></div></div>
+              <div class="flex justify-between text-[11px] text-slate-500 pt-1"><span>Base: <strong class="text-slate-300">$50,000.00</strong></span><span id="overall-status" class="text-emerald-400 font-semibold">HEALTHY</span></div>
+            </div>
+          </div>
+          <div id="drawdown-lock-overlay" onclick="openCheckoutModal()" class="absolute inset-0 bg-brand-card/85 backdrop-blur-[2px] rounded-2xl flex flex-col items-center justify-center cursor-pointer transition hover:bg-brand-card/80 p-6 text-center">
+            <span class="text-3xl mb-2">🔒</span><h4 class="text-sm font-bold text-white">Guardian Locked for Free Users</h4>
+            <p class="text-xs text-brand-gold mt-1 font-semibold">Click to Upgrade to PRO 👑</p>
+          </div>
+        </div>
+
+        <!-- Trade Summary -->
+        <div id="trade-summary" class="flex flex-wrap items-center justify-between gap-4 p-4 bg-brand-card border border-brand-border rounded-xl text-xs text-slate-400 border-glow-gold">
+          <span>📊 Total Trades: <strong id="summary-total-trades" class="text-white">0</strong></span>
+          <span>🎯 Win Rate: <strong id="summary-win-rate" class="text-emerald-400">0.0%</strong></span>
+          <span>💚 Gross Profit: <strong id="summary-gross-profit" class="text-emerald-400">$0.00</strong></span>
+          <span>❤️ Gross Loss: <strong id="summary-gross-loss" class="text-rose-400">$0.00</strong></span>
+          <span>📈 Net PnL: <strong id="summary-net-pnl" class="text-white">$0.00</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE: RISK CALCULATOR                      -->
+    <!-- ========================================== -->
+    <div id="page-calculator" class="page-section">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm border-glow-gold">
+          <h2 class="text-xl font-bold text-white glow-gold">🧮 Advanced Risk Calculator</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div class="space-y-4">
+              <div><label class="text-xs text-slate-400 font-medium">💰 Account Balance ($)</label><input type="number" id="calc-balance" value="50000" oninput="syncActiveAccountBalance(this.value)" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">📊 Risk per Trade (%)</label><input type="number" id="calc-risk-pct" value="0.5" step="0.1" oninput="updateDashboard()" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">⛔ Stop Loss (pips)</label><input type="number" id="calc-sl" value="50" oninput="updateDashboard()" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">🎯 Take Profit (pips)</label><input type="number" id="calc-tp" value="100" oninput="updateDashboard()" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">💵 Pip Value per Lot ($)</label><input type="number" id="calc-pipvalue" value="2" oninput="updateDashboard()" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">📦 Lot Size</label><input type="number" id="calc-lots" value="1.00" step="0.01" oninput="updateDashboard()" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="applyPreset('scalp')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">⚡ Scalp</button>
+                <button onclick="applyPreset('day')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">📈 Day Trade</button>
+                <button onclick="applyPreset('swing')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">🔄 Swing</button>
+                <button onclick="applyPreset('prop')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">🏛️ Prop Firm</button>
+              </div>
+            </div>
+            <div class="bg-slate-900/60 p-6 rounded-xl border border-brand-border/60 space-y-4 hover:border-brand-gold/30 transition">
+              <h3 class="text-sm font-bold text-white">📊 Risk Analysis</h3>
+              <div class="space-y-3 text-xs">
+                <div class="flex justify-between"><span class="text-slate-400">Max Risk Allowed:</span><span id="res-target-risk" class="font-bold text-white">$250.00</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Planned Loss:</span><span id="res-actual-loss" class="font-bold text-rose-400">$100.00</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Loss %:</span><span id="res-actual-pct" class="text-slate-300">0.20%</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Potential Profit:</span><span id="res-actual-profit" class="font-bold text-emerald-400">$200.00</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Risk:Reward:</span><span id="res-rr" class="font-bold text-brand-gold">1:2.00</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Position Size:</span><span id="res-position-size" class="font-bold text-white">1.00 lots</span></div>
+              </div>
+              <div id="status-badge" class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center hover:border-emerald-500/40 transition">
+                <span class="text-xs font-bold text-emerald-400">✓ Safe Risk Profile</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE: TRADE JOURNAL (FIXED)               -->
+    <!-- ========================================== -->
+    <div id="page-journal" class="page-section">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm border-glow-gold">
+          <h2 class="text-xl font-bold text-white glow-gold">📝 Trade Journal</h2>
+          <div class="flex flex-wrap gap-3 mt-4">
+            <input type="text" id="trade-search" placeholder="🔍 Search symbol..." oninput="filterTrades()" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold w-40">
+            <select id="filter-side" onchange="filterTrades()" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold">
+              <option value="all">All Sides</option><option value="BUY">📈 BUY</option><option value="SELL">📉 SELL</option>
+            </select>
+            <select id="filter-time" onchange="filterTrades()" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold">
+              <option value="all">All Time</option><option value="week">This Week</option><option value="month">This Month</option>
+            </select>
+            <button onclick="clearFilters()" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-xl transition">🔄 Clear Filters</button>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mt-4">
+    <input type="text" id="log-symbol" value="XAUUSD" placeholder="Symbol" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+    
+    <select id="log-side" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+        <option value="BUY">BUY</option>
+        <option value="SELL">SELL</option>
+    </select>
+    
+    <input type="number" id="log-lots" value="0.5" step="0.01" placeholder="Lots" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+    
+    <input type="number" id="log-open-price" placeholder="Open Price" step="0.01" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+    
+    <!-- Exit Status Dropdown (New) -->
+    <select id="log-exit-status" onchange="handleExitStatusChange()" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+        <option value="RUNNING">Running</option>
+        <option value="TP">TP Hit</option>
+        <option value="SL">SL Hit</option>
+        <option value="MANUAL">Manual Close</option>
+    </select>
+
+    <!-- SL & TP -->
+    <input type="number" id="log-sl" placeholder="SL Price" step="0.01" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+    <input type="number" id="log-tp" placeholder="TP Price" step="0.01" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+    
+    <!-- Manual Close Price (Hidden by default) -->
+    <input type="number" id="log-manual-close" placeholder="Manual Close Price" style="display:none;" step="0.01" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+    
+    <input type="text" id="log-pnl" placeholder="PnL ($)" readonly class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+</div>
+          <div class="flex flex-wrap gap-3 mt-3">
+            <button onclick="addTradeToLog()" class="bg-brand-gold text-black font-extrabold text-xs px-5 py-2.5 rounded-xl hover:opacity-90 transition shadow-md">➕ Log Trade</button>
+            <button onclick="addDemoTrades()" class="bg-slate-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl hover:bg-slate-600 transition">🎲 Demo</button>
+            <button onclick="clearAllTrades()" class="bg-rose-500/20 text-rose-400 font-extrabold text-xs px-5 py-2.5 rounded-xl hover:bg-rose-500/30 transition border border-rose-500/30">🗑️ Clear</button>
+          </div>
+          <div class="overflow-x-auto pt-4">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead><tr class="border-b border-brand-border text-slate-400 font-semibold bg-slate-900/40">
+                <th class="py-3 px-3"># Ticket</th><th class="py-3 px-3">Symbol</th><th class="py-3 px-3">Side</th>
+                <th class="py-3 px-3">SL</th><th class="py-3 px-3">TP</th><th class="py-3 px-3">Open Time</th>
+                <th class="py-3 px-3">Open</th><th class="py-3 px-3">Close Time</th><th class="py-3 px-3">Close</th>
+                <th class="py-3 px-3">Lots</th><th class="py-3 px-3">PnL ($)</th><th class="py-3 px-3 text-right">Action</th>
+              </tr></thead>
+              <tbody id="trades-table-body" class="divide-y divide-brand-border/45"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE: PROP GUARDIANS                       -->
+    <!-- ========================================== -->
+    <div id="page-guardian" class="page-section">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm border-glow-gold">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-white glow-gold">🛡️ Prop Firm Guardians</h2>
+            <span id="guardian-pro-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-lg border border-slate-700 font-bold">Free Tier</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/30 transition">
+              <h4 class="text-sm font-bold text-white mb-3">📊 Drawdown Monitor</h4>
+              <div class="space-y-4">
+                <div><div class="flex justify-between text-xs"><span class="text-slate-400">Current Drawdown</span><span id="guardian-current-dd" class="text-brand-gold font-bold">$0.00</span></div></div>
+                <div><div class="flex justify-between text-xs"><span class="text-slate-400">Max Allowed (10%)</span><span id="guardian-max-dd" class="text-white font-bold">$5,000.00</span></div></div>
+                <div><div class="flex justify-between text-xs"><span class="text-slate-400">Daily Limit (8%)</span><span id="guardian-daily-limit" class="text-white font-bold">$4,000.00</span></div></div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="guardian-dd-bar" class="bg-emerald-500 h-full rounded-full transition-all" style="width:0%"></div></div>
+                <div id="guardian-status" class="text-center text-xs font-bold text-emerald-400">✓ Within Limits</div>
+              </div>
+            </div>
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/30 transition">
+              <h4 class="text-sm font-bold text-white mb-3">📋 Prop Firm Rules</h4>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between"><span class="text-slate-400">Max Daily Drawdown</span><span class="text-white">8%</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Max Overall Drawdown</span><span class="text-white">10%</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Profit Target (Phase 1)</span><span class="text-white">8%</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Profit Target (Phase 2)</span><span class="text-white">5%</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Min Trading Days</span><span class="text-white">5</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Max Trading Days</span><span class="text-white">30</span></div>
+              </div>
+              <div class="mt-4 p-3 bg-brand-gold/10 rounded-lg border border-brand-gold/20 text-center">
+                <span class="text-[10px] text-brand-gold font-semibold">⚡ FTMO 50K Challenge Rules</span>
+              </div>
+            </div>
+          </div>
+          <div id="guardian-lock-overlay" onclick="openCheckoutModal()" class="relative mt-4 p-6 bg-slate-800/50 rounded-xl border border-dashed border-brand-border text-center cursor-pointer hover:border-brand-gold transition">
+            <span class="text-2xl block mb-2">🔒</span>
+            <h4 class="text-sm font-bold text-white">Upgrade to PRO for Advanced Guardian Features</h4>
+            <p class="text-xs text-slate-400 mt-1">Real-time alerts, multiple prop firm rules & more</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE: CHALLENGE TRACKER                    -->
+    <!-- ========================================== -->
+    <div id="page-challenges" class="page-section">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm border-glow-gold">
+          <h2 class="text-xl font-bold text-white glow-gold">🏆 Prop Firm Challenge Tracker</h2>
+          <p class="text-xs text-slate-400 mt-1">Track your progress across multiple prop firm challenges.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/40 transition hover-scale">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-brand-gold">FTMO</span>
+                <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Phase 1</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mt-2">$50,000 Challenge</h4>
+              <div class="mt-3 space-y-2 text-xs">
+                <div><div class="flex justify-between"><span class="text-slate-400">Profit Target (8%)</span><span class="text-white">$4,000</span></div></div>
+                <div><div class="flex justify-between"><span class="text-slate-400">Progress</span><span class="text-brand-gold font-bold">0%</span></div></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full rounded-full" style="width:0%"></div></div>
+                <div><div class="flex justify-between"><span class="text-slate-400">Days Used</span><span class="text-white">0 / 30</span></div></div>
+              </div>
+              <button onclick="showToast('info', 'Challenge tracking available in PRO version')" class="w-full mt-3 py-1.5 rounded-lg bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition">Track Challenge</button>
+            </div>
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/40 transition hover-scale">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-brand-gold">FundedNext</span>
+                <span class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Evaluation</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mt-2">$100,000 Evaluation</h4>
+              <div class="mt-3 space-y-2 text-xs">
+                <div><div class="flex justify-between"><span class="text-slate-400">Profit Target (8%)</span><span class="text-white">$8,000</span></div></div>
+                <div><div class="flex justify-between"><span class="text-slate-400">Progress</span><span class="text-brand-gold font-bold">0%</span></div></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full rounded-full" style="width:0%"></div></div>
+                <div><div class="flex justify-between"><span class="text-slate-400">Days Used</span><span class="text-white">0 / 30</span></div></div>
+              </div>
+              <button onclick="showToast('info', 'Challenge tracking available in PRO version')" class="w-full mt-3 py-1.5 rounded-lg bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition">Track Challenge</button>
+            </div>
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/40 transition hover-scale">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-brand-gold">Apex</span>
+                <span class="text-[9px] bg-slate-500/20 text-slate-400 px-2 py-0.5 rounded">Not Started</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mt-2">$50,000 Evaluation</h4>
+              <div class="mt-3 space-y-2 text-xs">
+                <div><div class="flex justify-between"><span class="text-slate-400">Profit Target</span><span class="text-white">$4,000</span></div></div>
+                <div><div class="flex justify-between"><span class="text-slate-400">Progress</span><span class="text-brand-gold font-bold">0%</span></div></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden"><div class="bg-slate-600 h-full rounded-full" style="width:0%"></div></div>
+                <div><div class="flex justify-between"><span class="text-slate-400">Days Used</span><span class="text-white">0 / 30</span></div></div>
+              </div>
+              <button onclick="showToast('info', 'Challenge tracking available in PRO version')" class="w-full mt-3 py-1.5 rounded-lg bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition">Track Challenge</button>
+            </div>
+          </div>
+          <div class="p-4 bg-slate-800/30 rounded-xl border border-brand-border/60 text-center mt-4">
+            <p class="text-xs text-slate-400">🔒 <span class="text-brand-gold font-semibold">PRO Feature:</span> Add unlimited challenges, auto-progress tracking, and detailed analytics.</p>
+            <button onclick="openCheckoutModal()" class="mt-2 bg-brand-gold/20 text-brand-gold text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-brand-gold/30 transition">Upgrade to PRO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE: ADVANCED STATS                       -->
+    <!-- ========================================== -->
+    <div id="page-analytics" class="page-section">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm border-glow-gold">
+          <h2 class="text-xl font-bold text-white glow-gold">📈 Advanced Statistics</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/30 transition">
+              <h4 class="text-sm font-bold text-white mb-3">📊 Key Metrics</h4>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between"><span class="text-slate-400">🏆 Max Consecutive Wins</span><span id="stat-max-wins" class="text-emerald-400 font-bold">0</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">📉 Max Consecutive Losses</span><span id="stat-max-losses" class="text-rose-400 font-bold">0</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">⏱️ Avg Trade Duration</span><span id="stat-avg-duration" class="text-white font-bold">0h 0m</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">💚 Best Day of Week</span><span id="stat-best-day" class="text-emerald-400 font-bold">—</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">❤️ Worst Day of Week</span><span id="stat-worst-day" class="text-rose-400 font-bold">—</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">🔄 Recovery Factor</span><span id="stat-recovery" class="text-brand-gold font-bold">0.00</span></div>
+              </div>
+            </div>
+            <div class="bg-slate-900/60 p-5 rounded-xl border border-brand-border/60 hover:border-brand-gold/30 transition">
+              <h4 class="text-sm font-bold text-white mb-3">📅 Monthly Breakdown</h4>
+              <div id="monthly-breakdown" class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin"></div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-3 pt-4 border-t border-brand-border/60">
+            <span class="text-xs text-slate-400 font-medium">⚡ Quick Actions:</span>
+            <button onclick="quickTrade('scalp')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">Scalp Entry</button>
+            <button onclick="quickTrade('day')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">Day Trade</button>
+            <button onclick="quickTrade('swing')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">Swing Entry</button>
+            <button onclick="showToast('info', '🔊 Sound alert test')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">🔊 Test Sound</button>
+            <button onclick="requestNotificationPermission()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-brand-border/60 transition hover:border-brand-gold">🔔 Enable Alerts</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE: SETTINGS                             -->
+    <!-- ========================================== -->
+    <div id="page-settings" class="page-section">
+      <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-sm border-glow-gold">
+          <h2 class="text-xl font-bold text-white glow-gold">⚙️ Terminal Settings</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div class="space-y-4">
+              <div><label class="text-xs text-slate-400 font-medium">Default Risk %</label><input type="number" id="settings-default-risk" value="0.5" step="0.1" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">Default Stop Loss (pips)</label><input type="number" id="settings-default-sl" value="50" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <div><label class="text-xs text-slate-400 font-medium">Default Take Profit (pips)</label><input type="number" id="settings-default-tp" value="100" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold"></div>
+              <button onclick="saveSettings()" class="bg-brand-gold text-black font-extrabold text-xs px-6 py-2.5 rounded-xl hover:opacity-90 transition">💾 Save Settings</button>
+            </div>
+            <div class="space-y-4">
+              <div class="bg-slate-900/60 p-4 rounded-xl border border-brand-border/60">
+                <h4 class="text-xs font-bold text-slate-300 mb-3">System Info</h4>
+                <div class="flex items-center justify-between"><span class="text-xs text-slate-400">Dark Mode</span><span class="text-xs text-brand-gold font-bold">✓ Active</span></div>
+                <div class="flex items-center justify-between mt-2"><span class="text-xs text-slate-400">Pro Status</span><span id="settings-pro-status" class="text-xs text-slate-400 font-bold">Free</span></div>
+                <div class="flex items-center justify-between mt-2"><span class="text-xs text-slate-400">Accounts</span><span id="settings-total-accounts" class="text-xs text-white font-bold">1</span></div>
+                <div class="flex items-center justify-between mt-2"><span class="text-xs text-slate-400">Trades</span><span id="settings-total-trades" class="text-xs text-white font-bold">0</span></div>
+              </div>
+              <div class="flex gap-3">
+                <button onclick="resetAllData()" class="bg-rose-500/20 text-rose-400 font-extrabold text-xs px-4 py-2.5 rounded-xl hover:bg-rose-500/30 transition border border-rose-500/30">🔄 Reset</button>
+                <button onclick="exportAllData()" class="bg-slate-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-600 transition">📤 Export</button>
+                <button onclick="importAllData()" class="bg-slate-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-600 transition">📥 Import</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- ACCOUNT MANAGER MODAL                      -->
+  <!-- ========================================== -->
+  <div id="account-manager-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-xl w-full p-6 space-y-6 shadow-2xl relative">
+      <button onclick="closeAccountManagerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm">✕</button>
+      <h3 class="text-base font-bold text-white flex items-center gap-2"><span>👥</span> Multi-Account Manager</h3>
+      <div class="bg-slate-900/60 p-4 rounded-xl border border-brand-border/60 space-y-3">
+        <h4 class="text-xs font-bold text-brand-gold uppercase tracking-wider">Add New Account</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <select id="new-acc-type-select" onchange="handleAccountTypeSelection(this.value)" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold">
+            <option value="FundedNext">FundedNext</option><option value="FTMO">FTMO</option><option value="Topstep">Topstep</option><option value="OctaFXDemo">OctaFX Demo</option><option value="DNAMarkets">DNA Markets</option><option value="PersonalAccount">Personal Account</option>
+            <option value="Apex Trader Funding">Apex</option><option value="custom">✏️ Custom</option>
+          </select>
+          <input type="number" id="new-acc-balance" placeholder="Balance" value="50000" class="bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold">
+          <button onclick="addNewAccount()" class="bg-brand-gold text-black font-extrabold text-xs px-4 py-2 rounded-xl hover:opacity-90 transition">+ Create</button>
+        </div>
+        <div id="custom-account-name-wrapper" class="hidden pt-1">
+          <input type="text" id="new-acc-custom-name" placeholder="Custom Account Name" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold">
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h4 class="text-xs font-bold text-slate-300">Registered Accounts</h4>
+        <div class="max-h-48 overflow-y-auto space-y-2 scrollbar-thin" id="accounts-list-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- CHECKOUT OVERLAY - FIXED                   -->
+  <!-- ========================================== -->
+  <div id="checkout-overlay" class="checkout-overlay">
+    <div class="checkout-container">
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-6 shadow-2xl">
+
+        <!-- Checkout Header -->
+        <div class="flex items-center justify-between mb-4 pb-4 border-b border-brand-border">
+          <div class="flex items-center gap-3">
+            <div class="bg-brand-gold/10 p-2 rounded-xl border border-brand-gold/20">
+              <span class="text-brand-gold font-black text-xl">S</span>
+            </div>
+            <div>
+              <span class="text-sm font-black tracking-wider text-white block">SAURISH</span>
+              <span class="text-[10px] tracking-widest text-brand-gold font-bold uppercase">PRO CHECKOUT</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs text-slate-400">Secure 🔒</span>
+            <button onclick="closeCheckoutModal()" class="text-xs text-slate-400 hover:text-white transition">✕</button>
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <div class="flex items-center justify-center gap-2 mb-6">
+          <div class="step-indicator">
+            <div class="step-dot active" id="co-step-1">1</div>
+            <span class="text-xs text-brand-gold font-medium">Plan</span>
+          </div>
+          <div class="step-line" id="co-line-1"></div>
+          <div class="step-indicator">
+            <div class="step-dot inactive" id="co-step-2">2</div>
+            <span class="text-xs text-slate-400 font-medium">Payment</span>
+          </div>
+          <div class="step-line" id="co-line-2"></div>
+          <div class="step-indicator">
+            <div class="step-dot inactive" id="co-step-3">3</div>
+            <span class="text-xs text-slate-400 font-medium">Confirm</span>
+          </div>
+        </div>
+
+        <!-- STEP 1: PLAN SELECTION -->
+        <div id="co-step-plan" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-bold text-white">Choose Your Plan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Monthly Plan -->
+              <div class="plan-card" onclick="coSelectPlan('monthly')" id="co-plan-monthly">
+                <div>
+                  <h4 class="text-sm font-bold text-white">Monthly VIP</h4>
+                  <p class="text-xs text-slate-400">Full PRO access</p>
+                </div>
+                <div class="mt-4">
+                  <span class="text-2xl font-black text-white">$29</span>
+                  <span class="text-xs text-slate-400">/mo</span>
+                </div>
+                <ul class="mt-4 space-y-2 text-xs text-slate-300">
+                  <li>✓ Uncapped risk limits</li>
+                  <li>✓ Prop firm sync</li>
+                  <li>✓ Multi-account</li>
+                  <li>✓ Drawdown tracking</li>
+                </ul>
+                <button class="w-full mt-4 py-2 rounded-xl bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition">Select</button>
+              </div>
+
+              <!-- Lifetime Plan -->
+              <div class="plan-card popular" onclick="coSelectPlan('lifetime')" id="co-plan-lifetime">
+                <div>
+                  <h4 class="text-sm font-bold text-white">Lifetime VIP</h4>
+                  <p class="text-xs text-brand-gold">Best value ⭐</p>
+                </div>
+                <div class="mt-4">
+                  <span class="text-2xl font-black text-white">$99</span>
+                  <span class="text-xs text-slate-400">/once</span>
+                  <span class="block text-[10px] text-emerald-400">Save 70%</span>
+                </div>
+                <ul class="mt-4 space-y-2 text-xs text-slate-300">
+                  <li>✓ All PRO features</li>
+                  <li>✓ Lifetime updates</li>
+                  <li>✓ Priority support</li>
+                  <li>✓ Unlimited accounts</li>
+                </ul>
+                <button class="w-full mt-4 py-2.5 rounded-xl bg-brand-gold text-black text-xs font-extrabold hover:opacity-90 transition pulse-gold">Select</button>
+              </div>
+            </div>
+            <div class="p-4 bg-slate-800/40 rounded-xl border border-brand-border/60">
+              <p class="text-xs text-slate-400">We accept: 💳 Visa 💳 Mastercard 🟡 Binance Pay 💰 Skrill ₿ Crypto 🟣 PayPal</p>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="lg:col-span-1">
+            <div class="checkout-card rounded-2xl p-6 sticky top-4">
+              <h3 class="text-sm font-bold text-white mb-4">📋 Summary</h3>
+              <div class="space-y-3 text-xs">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Plan</span>
+                  <span id="co-summary-plan" class="text-white font-semibold">Select</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Billing</span>
+                  <span id="co-summary-billing" class="text-slate-300">—</span>
+                </div>
+              </div>
+              <div class="border-t border-brand-border my-4 pt-4">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Total</span>
+                  <span id="co-summary-total" class="text-xl font-black text-brand-gold">$0.00</span>
+                </div>
+              </div>
+              <div class="flex gap-2 mt-2">
+                <input type="text" id="co-coupon-input" placeholder="Coupon" class="flex-1 bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold">
+                <button onclick="coApplyCoupon()" class="px-3 py-2 bg-slate-700 text-white text-xs font-bold rounded-xl hover:bg-slate-600 transition">Apply</button>
+              </div>
+              <div id="co-coupon-message" class="text-[10px] mt-1 hidden"></div>
+              <button id="co-checkout-btn" onclick="coGoToPayment()" class="checkout-btn mt-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Continue ➔</button>
+              <div class="trust-badge mt-4 p-3 rounded-xl text-center">
+                <div class="text-xs text-brand-gold">⭐⭐⭐⭐⭐ 4.5/5</div>
+                <p class="text-[10px] text-slate-400">Trusted by 100,000+ traders</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: PAYMENT METHOD -->
+        <div id="co-step-payment" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+              <h2 class="text-lg font-bold text-white">💳 Payment Method</h2>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="payment-method" onclick="coSelectPayment('card')" id="co-pm-card">
+                  <span class="text-2xl block">💳</span>
+                  <span class="text-xs font-medium text-white">Card</span>
+                </div>
+                <div class="payment-method" onclick="coSelectPayment('binance')" id="co-pm-binance">
+                  <span class="text-2xl block">🟡</span>
+                  <span class="text-xs font-medium text-white">Binance</span>
+                </div>
+                <div class="payment-method" onclick="coSelectPayment('paypal')" id="co-pm-paypal">
+                  <span class="text-2xl block">🟣</span>
+                  <span class="text-xs font-medium text-white">PayPal</span>
+                </div>
+                <div class="payment-method" onclick="coSelectPayment('skrill')" id="co-pm-skrill">
+                  <span class="text-2xl block">💰</span>
+                  <span class="text-xs font-medium text-white">Skrill</span>
+                </div>
+                <div class="payment-method" onclick="coSelectPayment('crypto')" id="co-pm-crypto">
+                  <span class="text-2xl block">₿</span>
+                  <span class="text-xs font-medium text-white">Crypto</span>
+                </div>
+                <div class="payment-method" onclick="coSelectPayment('apple')" id="co-pm-apple">
+                  <span class="text-2xl block">🍎</span>
+                  <span class="text-xs font-medium text-white">Apple Pay</span>
+                </div>
+              </div>
+              <div id="co-payment-form" class="mt-4 p-5 bg-slate-800/40 rounded-xl border border-brand-border/60">
+                <div id="co-form-card" class="space-y-3">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                      <input type="text" id="co-card-name" placeholder="Cardholder Name" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div class="col-span-2">
+                      <input type="text" id="co-card-number" placeholder="Card Number" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                      <input type="text" id="co-card-expiry" placeholder="MM/YY" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                      <input type="text" id="co-card-cvc" placeholder="CVC" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                  </div>
+                </div>
+                <div id="co-form-alt" class="hidden text-center py-4">
+                  <div class="text-3xl mb-2" id="co-alt-icon">🟡</div>
+                  <p id="co-alt-title" class="text-sm font-bold text-white">Binance Pay</p>
+                  <p class="text-xs text-slate-400 mt-1">You will be redirected to complete payment</p>
+                </div>
+              </div>
+              <div class="flex gap-3 mt-4">
+                <button onclick="coGoBackToPlan()" class="px-6 py-2.5 rounded-xl bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition">← Back</button>
+                <button onclick="coGoToConfirm()" class="flex-1 py-2.5 rounded-xl bg-brand-gold text-black font-extrabold text-xs hover:opacity-90 transition pulse-gold">Review Order ➔</button>
+              </div>
+            </div>
+            <div class="lg:col-span-1">
+              <div class="checkout-card rounded-2xl p-6 sticky top-4">
+                <h3 class="text-sm font-bold text-white mb-4">📋 Summary</h3>
+                <div class="space-y-3 text-xs">
+                  <div class="flex justify-between"><span class="text-slate-400">Plan</span><span id="co-summary-plan-2" class="text-white">—</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Billing</span><span id="co-summary-billing-2" class="text-slate-300">—</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Method</span><span id="co-summary-payment" class="text-white">—</span></div>
+                </div>
+                <div class="border-t border-brand-border my-4 pt-4">
+                  <div class="flex justify-between"><span class="text-slate-400">Total</span><span id="co-summary-total-2" class="text-xl font-black text-brand-gold">$0.00</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: CONFIRM -->
+        <div id="co-step-confirm" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+              <h2 class="text-lg font-bold text-white">✅ Confirm Order</h2>
+              <div class="bg-slate-800/40 rounded-xl p-5 border border-brand-border/60 space-y-3">
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Plan</span><span id="co-confirm-plan" class="text-white font-bold">—</span></div>
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Billing</span><span id="co-confirm-billing" class="text-white">—</span></div>
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Payment</span><span id="co-confirm-payment" class="text-white">—</span></div>
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Coupon</span><span id="co-confirm-coupon" class="text-slate-300">None</span></div>
+              </div>
+              <div class="flex gap-3">
+                <button onclick="coGoBackToPayment()" class="px-6 py-2.5 rounded-xl bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition">← Back</button>
+                <button onclick="coProcessPayment()" id="co-confirm-btn" class="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-500 transition pulse-gold flex items-center justify-center gap-2">💳 Confirm & Pay</button>
+              </div>
+            </div>
+            <div class="lg:col-span-1">
+              <div class="checkout-card rounded-2xl p-6 sticky top-4">
+                <h3 class="text-sm font-bold text-white mb-4">💰 Payment Summary</h3>
+                <div class="space-y-3 text-xs">
+                  <div class="flex justify-between"><span class="text-slate-400">Subtotal</span><span id="co-confirm-subtotal" class="text-white">$0.00</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Fee</span><span id="co-confirm-fee" class="text-slate-300">$0.00</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Discount</span><span id="co-confirm-discount" class="text-emerald-400">$0.00</span></div>
+                </div>
+                <div class="border-t border-brand-border my-4 pt-4">
+                  <div class="flex justify-between"><span class="text-slate-400">Total</span><span id="co-confirm-total" class="text-2xl font-black text-brand-gold">$0.00</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SUCCESS MODAL                              -->
+  <!-- ========================================== -->
+  <div id="co-success-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[10000] hidden items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-gold/30 rounded-2xl max-w-md w-full p-8 text-center shadow-2xl fade-in">
+      <div class="text-5xl mb-4">🎉</div>
+      <h2 class="text-2xl font-bold text-white mb-2">Payment Successful!</h2>
+      <p class="text-sm text-slate-400 mb-4">Welcome to Saurish Pro VIP Terminal</p>
+      <button onclick="coCloseSuccessAndReload()" class="w-full py-3 rounded-xl bg-brand-gold text-black font-extrabold text-sm hover:opacity-90 transition">🚀 Go to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT ENGINE - COMPLETE              -->
+  <!-- ========================================== -->
+  <script>
+    // ============================================================
+    // 1. CORE STORAGE & UTILITY FUNCTIONS
+    // ============================================================
+    // Exit status badalne par Manual price box dikhane/chhipane ke liye
+function handleExitStatusChange() {
+    const status = document.getElementById('log-exit-status').value;
+    const manualInput = document.getElementById('log-manual-close');
+    
+    if (status === 'MANUAL') {
+        manualInput.style.display = 'block';
+    } else {
+        manualInput.style.display = 'none';
+    }
+    calculateLivePnL();
+}
+async function fetchMT5Trades() {
+    try {
+        let response = await fetch('http://127.0.0.1:5000/api/mt5-trades');
+        let data = await response.json();
+        
+        if (data.status === 'success' && data.trades.length > 0) {
+            let tradesTableBody = document.getElementById('trades-table-body'); // Aapki table ki body ID
+            if (!tradesTableBody) return;
+            
+            // Yahan trades ko table mein render kar sakte hain bina balance change kiye
+            console.log("MT5 Trades Fetched:", data.trades);
+        }
+    } catch (error) {
+        console.log("MT5 Bridge not running locally:", error);
+    }
+}
+// Jab aap Multi-Account Manager mein koi account active select karein
+function setActiveAccount(accountName, accountSize) {
+    // Active account local storage mein save karein
+    localStorage.setItem('active_prop_account', accountName);
+    localStorage.setItem('active_account_size', accountSize);
+    
+    // UI update karein
+    const activeLabel = document.querySelector('.active-account-display'); // jahan top right pe dikhta hai
+    if (activeLabel) {
+        activeLabel.innerText = `${accountName} ($${accountSize})`;
+    }
+    
+    // Sirf is active account ke trades filter ya load honge
+    loadTradesForActiveAccount(accountName);
+}
+
+// Active account ke anusaar trades load karne ka function
+function loadTradesForActiveAccount(accountName) {
+    let allTrades = JSON.parse(localStorage.getItem('user_trades')) || [];
+    
+    // Agar trades ke sath account tagged hai, toh filter karein
+    let filteredTrades = allTrades.filter(trade => trade.account === accountName);
+    
+    // Agar us account mein koi trade nahi hai, toh table khali rahegi (No trades found)
+    renderFilteredTrades(filteredTrades);
+}
+// Har 5 second mein trades check karega
+setInterval(fetchMT5Trades, 5000);
+// Live PnL Calculation Function
+
+function calculateLivePnL() {
+    const symbol = document.getElementById('log-symbol')?.value.toUpperCase() || 'XAUUSD';
+    const side = document.getElementById('log-side')?.value || 'BUY';
+    const lots = parseFloat(document.getElementById('log-lots')?.value) || 0;
+    const openPrice = parseFloat(document.getElementById('log-open-price')?.value) || 0;
+    const status = document.getElementById('log-exit-status')?.value || 'RUNNING';
+    
+    const slPrice = parseFloat(document.getElementById('log-sl')?.value) || 0;
+    const tpPrice = parseFloat(document.getElementById('log-tp')?.value) || 0;
+    const manualPrice = parseFloat(document.getElementById('log-manual-close')?.value) || 0;
+    
+    const pnlField = document.getElementById('log-pnl');
+    if (!pnlField) return;
+
+    if (openPrice === 0 || lots === 0 || status === 'RUNNING') {
+        pnlField.value = "";
+        return;
+    }
+
+    let exitPrice = 0;
+    if (status === 'TP') {
+        exitPrice = tpPrice;
+    } else if (status === 'SL') {
+        exitPrice = slPrice;
+    } else if (status === 'MANUAL') {
+        exitPrice = manualPrice;
+    }
+
+    if (exitPrice === 0) {
+        pnlField.value = "";
+        return;
+    }
+
+    // PnL Formula for Gold / Forex
+    let diff = (side === 'BUY') ? (exitPrice - openPrice) : (openPrice - exitPrice);
+    let multiplier = (symbol.includes('XAU') || symbol.includes('GOLD')) ? 100 : 100000;
+    let finalPnL = diff * lots * multiplier;
+
+    pnlField.value = finalPnL.toFixed(2);
+}
+
+// Event listeners taaki input dete hi turant calculate ho
+document.addEventListener('DOMContentLoaded', () => {
+    ['log-open-price', 'log-lots', 'log-sl', 'log-tp', 'log-manual-close', 'log-side', 'log-symbol', 'log-exit-status'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', calculateLivePnL);
+            el.addEventListener('change', calculateLivePnL);
+        }
+    });
+});
+    function getAccounts() {
+      let a = JSON.parse(localStorage.getItem('trading_accounts'));
+      if (!a || !a.length) {
+        a = [{ id: 'acc_' + Date.now(), name: 'FTMO Challenge ($50K)', balance: 50000, trades: [] }];
+        localStorage.setItem('trading_accounts', JSON.stringify(a));
+      }
+      return a;
+    }
+
+    function getActiveId() {
+      let id = localStorage.getItem('active_account_id');
+      if (!id) { let a = getAccounts();
+        id = a[0].id;
+        localStorage.setItem('active_account_id', id); }
+      return id;
+    }
+
+    function getCurrentAccount() {
+      let a = getAccounts();
+      let id = getActiveId();
+      let acc = a.find(x => x.id == id);
+      if (!acc && a.length) { acc = a[0];
+        localStorage.setItem('active_account_id', acc.id); }
+      return acc;
+    }
+
+    function saveAccounts(a, id) {
+      localStorage.setItem('trading_accounts', JSON.stringify(a));
+      if (id) localStorage.setItem('active_account_id', id);
+    }
+
+    function isPro() {
+      return localStorage.getItem('is_pro_user') === 'true';
+    }
+
+    function setPro(b) {
+      localStorage.setItem('is_pro_user', b ? 'true' : 'false');
+      checkUserPlanStatus();
+      updateDashboard();
+    }
+
+    // ============================================================
+    // 2. TAB NAVIGATION
+    // ============================================================
+
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      let targetPage = document.getElementById('page-' + tabName);
+      if (targetPage) targetPage.classList.add('active');
+
+      document.querySelectorAll('#sidebar-nav a').forEach(el => {
+        el.classList.remove('tab-active', 'tab-inactive');
+        if (el.dataset.tab === tabName) {
+          el.className =
+            'flex items-center space-x-3 px-4 py-3 rounded-xl tab-active text-xs font-medium transition';
+        } else {
+          el.className =
+            'flex items-center space-x-3 px-4 py-3 rounded-xl tab-inactive text-xs font-medium transition';
+        }
+      });
+
+      let titles = { 'dashboard': 'Dashboard', 'calculator': 'Risk Calculator', 'journal': 'Trade Journal',
+        'guardian': 'Prop Guardians', 'challenges': 'Challenge Tracker', 'analytics': 'Advanced Stats',
+        'settings': 'Settings' };
+      document.getElementById('page-title').innerText = titles[tabName] || 'Dashboard';
+      if (tabName === 'dashboard' || tabName === 'guardian' || tabName === 'challenges' || tabName === 'analytics') {
+        updateDashboard();
+      }
+    };
+
+    // ============================================================
+    // 3. SETUP SCREEN
+    // ============================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (localStorage.getItem('is_pro_user') === null) setPro(false);
+      let accounts = getAccounts();
+      if (accounts.length === 0 || !localStorage.getItem('user_has_setup')) {
+        showCenterAddAccountScreen();
+      } else {
+        initDashboard();
+      }
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.remove('dark');
+      }
+
+      updateTicker();
+      updateSession();
+      loadStaticCalendar();
+      setInterval(updateTicker, 5000);
+      setInterval(updateSession, 10000);
+    });
+
+    // ============================================================
+    // 4. CHECKOUT MODAL FUNCTIONS
+    // ============================================================
+
+    window.openCheckoutModal = function() {
+      coResetState();
+      document.getElementById('checkout-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCheckoutModal = function() {
+      document.getElementById('checkout-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // ============================================================
+    // 5. CHECKOUT STATE & FUNCTIONS
+    // ============================================================
+
+    const coState = {
+      selectedPlan: null,
+      planPrice: 0,
+      planName: '',
+      billingType: '',
+      paymentMethod: null,
+      couponApplied: false,
+      couponCode: '',
+      discountAmount: 0,
+      feeAmount: 0,
+      totalAmount: 0,
+      basePrice: 0
+    };
+    const coPlans = { monthly: { name: 'Monthly VIP', price: 29, billing: 'Monthly' }, lifetime: { name: 'Lifetime VIP',
+        price: 99, billing: 'One-time' } };
+    const coPaymentFees = { card: { label: 'Card', fee: 0, icon: '💳' }, binance: { label: 'Binance Pay', fee: 0.01,
+        icon: '🟡' }, paypal: { label: 'PayPal', fee: 0.029, icon: '🟣' }, skrill: { label: 'Skrill', fee: 0.03,
+        icon: '💰' }, crypto: { label: 'Crypto', fee: 0, icon: '₿' }, apple: { label: 'Apple Pay', fee: 0, icon: '🍎' } };
+
+    function coResetState() {
+      coState.selectedPlan = null;
+      coState.planPrice = 0;
+      coState.planName = '';
+      coState.billingType = '';
+      coState.paymentMethod = null;
+      coState.couponApplied = false;
+      coState.couponCode = '';
+      coState.discountAmount = 0;
+      coState.feeAmount = 0;
+      coState.totalAmount = 0;
+      coState.basePrice = 0;
+
+      document.getElementById('co-step-plan').classList.remove('hidden');
+      document.getElementById('co-step-payment').classList.add('hidden');
+      document.getElementById('co-step-confirm').classList.add('hidden');
+      document.getElementById('co-step-1').className = 'step-dot active';
+      document.getElementById('co-line-1').className = 'step-line';
+      document.getElementById('co-step-2').className = 'step-dot inactive';
+      document.getElementById('co-line-2').className = 'step-line';
+      document.getElementById('co-step-3').className = 'step-dot inactive';
+      document.getElementById('co-checkout-btn').disabled = true;
+      document.getElementById('co-checkout-btn').className = 'checkout-btn mt-4 disabled:opacity-50 disabled:cursor-not-allowed';
+      document.getElementById('co-summary-plan').innerText = 'Select';
+      document.getElementById('co-summary-billing').innerText = '—';
+      document.getElementById('co-summary-total').innerText = '$0.00';
+      document.getElementById('co-coupon-input').value = '';
+      document.getElementById('co-coupon-message').classList.add('hidden');
+      document.querySelectorAll('.plan-card').forEach(el => {
+        el.style.borderColor = '';
+        if (el.id === 'co-plan-lifetime') el.style.borderColor = '#D4AF37';
+      });
+    }
+
+    window.coSelectPlan = function(planKey) {
+      coState.selectedPlan = planKey;
+      const plan = coPlans[planKey];
+      coState.planPrice = plan.price;
+      coState.planName = plan.name;
+      coState.billingType = plan.billing;
+      coState.basePrice = plan.price;
+      coState.discountAmount = 0;
+      coState.feeAmount = 0;
+      coState.totalAmount = plan.price;
+
+      document.querySelectorAll('.plan-card').forEach(el => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+        if (el.id === 'co-plan-lifetime') el.style.borderColor = '#D4AF37';
+      });
+      document.getElementById('co-plan-' + planKey).style.borderColor = '#D4AF37';
+      document.getElementById('co-plan-' + planKey).style.boxShadow = '0 0 30px rgba(212, 175, 55, 0.1)';
+
+      document.getElementById('co-summary-plan').innerText = plan.name;
+      document.getElementById('co-summary-billing').innerText = plan.billing;
+      document.getElementById('co-summary-total').innerText = '$' + plan.price.toFixed(2);
+      document.getElementById('co-checkout-btn').disabled = false;
+      document.getElementById('co-checkout-btn').className = 'checkout-btn mt-4';
+      document.getElementById('co-coupon-message').classList.add('hidden');
+      document.getElementById('co-coupon-input').value = '';
+    };
+
+    window.coApplyCoupon = function() {
+      const input = document.getElementById('co-coupon-input');
+      const code = input.value.trim().toUpperCase();
+      const msg = document.getElementById('co-coupon-message');
+      if (!code) { msg.innerText = 'Enter a coupon code';
+        msg.className = 'text-[10px] mt-1 text-amber-400';
+        msg.classList.remove('hidden'); return; }
+      const coupons = { 'SAVE10': 10, 'SAVE20': 20, 'PRO50': 50, 'WELCOME': 5 };
+      if (coupons[code]) {
+        const discount = (coState.basePrice * coupons[code]) / 100;
+        coState.discountAmount = discount;
+        coState.couponApplied = true;
+        coState.couponCode = code;
+        coState.totalAmount = coState.basePrice - discount + coState.feeAmount;
+        msg.innerText = `✓ Applied! Saved $${discount.toFixed(2)}`;
+        msg.className = 'text-[10px] mt-1 text-emerald-400';
+        msg.classList.remove('hidden');
+        document.getElementById('co-summary-total').innerText = '$' + coState.totalAmount.toFixed(2);
+      } else {
+        msg.innerText = '✗ Invalid coupon';
+        msg.className = 'text-[10px] mt-1 text-rose-400';
+        msg.classList.remove('hidden');
+      }
+    };
+
+    window.coGoToPayment = function() {
+      if (!coState.selectedPlan) { showToast('error', 'Please select a plan first.'); return; }
+      document.getElementById('co-step-1').className = 'step-dot completed';
+      document.getElementById('co-line-1').className = 'step-line completed';
+      document.getElementById('co-step-2').className = 'step-dot active';
+      document.getElementById('co-step-plan').classList.add('hidden');
+      document.getElementById('co-step-payment').classList.remove('hidden');
+      document.getElementById('co-step-confirm').classList.add('hidden');
+      document.getElementById('co-summary-plan-2').innerText = coState.planName;
+      document.getElementById('co-summary-billing-2').innerText = coState.billingType;
+      document.getElementById('co-summary-total-2').innerText = '$' + coState.totalAmount.toFixed(2);
+      coSelectPayment('card');
+    };
+
+    window.coGoBackToPlan = function() {
+      document.getElementById('co-step-1').className = 'step-dot active';
+      document.getElementById('co-line-1').className = 'step-line';
+      document.getElementById('co-step-2').className = 'step-dot inactive';
+      document.getElementById('co-step-plan').classList.remove('hidden');
+      document.getElementById('co-step-payment').classList.add('hidden');
+      document.getElementById('co-step-confirm').classList.add('hidden');
+    };
+
+    window.coSelectPayment = function(method) {
+      coState.paymentMethod = method;
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.className = 'payment-method';
+      });
+      document.getElementById('co-pm-' + method).classList.add('payment-method-active');
+      document.getElementById('co-summary-payment').innerText = coPaymentFees[method].label;
+      const cardForm = document.getElementById('co-form-card');
+      const altForm = document.getElementById('co-form-alt');
+      if (method === 'card') { cardForm.style.display = 'block';
+        altForm.style.display = 'none'; } else { cardForm.style.display = 'none';
+        altForm.style.display = 'block';
+        const data = coPaymentFees[method];
+        document.getElementById('co-alt-icon').innerText = data.icon;
+        document.getElementById('co-alt-title').innerText = data.label; }
+    };
+
+    window.coGoToConfirm = function() {
+      if (!coState.paymentMethod) { showToast('error', 'Select a payment method.'); return; }
+      if (coState.paymentMethod === 'card') {
+        const name = document.getElementById('co-card-name').value.trim();
+        const number = document.getElementById('co-card-number').value.trim();
+        const expiry = document.getElementById('co-card-expiry').value.trim();
+        const cvc = document.getElementById('co-card-cvc').value.trim();
+        if (!name || !number || !expiry || !cvc) { showToast('error', 'Fill all card details.'); return; }
+        if (number.replace(/\s/g, '').length < 16) { showToast('error', 'Enter valid card number.'); return; }
+      }
+      document.getElementById('co-step-2').className = 'step-dot completed';
+      document.getElementById('co-line-2').className = 'step-line completed';
+      document.getElementById('co-step-3').className = 'step-dot active';
+      document.getElementById('co-step-payment').classList.add('hidden');
+      document.getElementById('co-step-confirm').classList.remove('hidden');
+      document.getElementById('co-confirm-plan').innerText = coState.planName;
+      document.getElementById('co-confirm-billing').innerText = coState.billingType;
+      document.getElementById('co-confirm-payment').innerText = coPaymentFees[coState.paymentMethod].label;
+      document.getElementById('co-confirm-coupon').innerText = coState.couponApplied ? coState.couponCode + ' (-$' +
+        coState.discountAmount.toFixed(2) + ')' : 'None';
+      const fee = coState.basePrice * (coPaymentFees[coState.paymentMethod].fee || 0);
+      coState.feeAmount = fee;
+      coState.totalAmount = coState.basePrice - coState.discountAmount + fee;
+      document.getElementById('co-confirm-subtotal').innerText = '$' + coState.basePrice.toFixed(2);
+      document.getElementById('co-confirm-fee').innerText = '$' + fee.toFixed(2);
+      document.getElementById('co-confirm-discount').innerText = (coState.discountAmount > 0 ? '-' : '') + '$' +
+        coState.discountAmount.toFixed(2);
+      document.getElementById('co-confirm-total').innerText = '$' + coState.totalAmount.toFixed(2);
+    };
+
+    window.coGoBackToPayment = function() {
+      document.getElementById('co-step-2').className = 'step-dot active';
+      document.getElementById('co-line-2').className = 'step-line';
+      document.getElementById('co-step-3').className = 'step-dot inactive';
+      document.getElementById('co-step-payment').classList.remove('hidden');
+      document.getElementById('co-step-confirm').classList.add('hidden');
+    };
+
+    window.coProcessPayment = function() {
+      const btn = document.getElementById('co-confirm-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Processing...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        setPro(true);
+        document.getElementById('co-success-modal').style.display = 'flex';
+        checkUserPlanStatus();
+        updateDashboard();
+        renderAccountSwitcher();
+        showToast('success', '🎉 Welcome to Saurish Pro VIP!');
+        closeCheckoutModal();
+      }, 2000);
+    };
+
+    window.coCloseSuccessAndReload = function() {
+      document.getElementById('co-success-modal').style.display = 'none';
+      location.reload();
+    };
+
+    // Card formatting
+    document.getElementById('co-card-number')?.addEventListener('input', function(e) {
+      let val = this.value.replace(/\D/g, '');
+      val = val.match(/.{1,4}/g)?.join(' ') || val;
+      this.value = val.substring(0, 19);
+    });
+    document.getElementById('co-card-expiry')?.addEventListener('input', function(e) {
+      let val = this.value.replace(/\D/g, '');
+      if (val.length >= 2) { val = val.substring(0, 2) + '/' + val.substring(2, 4); }
+      this.value = val.substring(0, 5);
+    });
+    document.getElementById('co-card-cvc')?.addEventListener('input', function(e) {
+      this.value = this.value.replace(/\D/g, '').substring(0, 4);
+    });
+
+    // ============================================================
+    // 6. PLAN STATUS
+    // ============================================================
+
+    window.checkUserPlanStatus = function() {
+      let pro = isPro();
+      let elements = {
+        plan: document.getElementById('user-plan-badge'),
+        riskLabel: document.getElementById('risk-cap-badge-label'),
+        riskDesc: document.getElementById('risk-cap-desc'),
+        lockBadge: document.getElementById('drawdown-lock-badge'),
+        overlay: document.getElementById('drawdown-lock-overlay'),
+        topBtn: document.getElementById('upgrade-top-btn'),
+        proBadge: document.getElementById('guardian-pro-badge'),
+        settingsPro: document.getElementById('settings-pro-status')
+      };
+
+      if (pro) {
+        if (elements.plan) { elements.plan.innerText = 'PRO VIP Active 👑';
+          elements.plan.className = 'text-emerald-400 font-bold'; }
+        if (elements.riskLabel) { elements.riskLabel.innerText = 'UNCAPPED';
+          elements.riskLabel.className = 'text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold'; }
+        if (elements.riskDesc) { elements.riskDesc.innerText = 'Uncapped Risk: Full Pro Flexibility Unlocked'; }
+        if (elements.lockBadge) { elements.lockBadge.innerText = 'PRO Active 👑';
+          elements.lockBadge.className = 'text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 font-bold'; }
+        if (elements.overlay) elements.overlay.style.display = 'none';
+        if (elements.topBtn) elements.topBtn.style.display = 'none';
+        if (elements.proBadge) { elements.proBadge.innerText = 'PRO Active 👑';
+          elements.proBadge.className = 'text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 font-bold'; }
+        if (elements.settingsPro) { elements.settingsPro.innerText = 'PRO VIP Active';
+          elements.settingsPro.className = 'text-xs text-emerald-400 font-bold'; }
+        let maxRiskEl = document.getElementById('top-card-max-risk');
+        if (maxRiskEl) {
+          let acc = getCurrentAccount();
+          let bal = acc ? acc.balance : 50000;
+          maxRiskEl.innerText = '$' + (bal * 0.02).toFixed(2);
+        }
+        let acc = getCurrentAccount();
+        let bal = acc ? acc.balance : 50000;
+        let dailyBuffer = bal * 0.08;
+        let dbEl = document.getElementById('metric-daily-buffer');
+        if (dbEl) dbEl.innerText = '$' + dailyBuffer.toFixed(2);
+      } else {
+        if (elements.plan) { elements.plan.innerText = 'Free Tier 🛡️';
+          elements.plan.className = 'text-slate-400 font-bold'; }
+        if (elements.riskLabel) { elements.riskLabel.innerText = '$250 CAP';
+          elements.riskLabel.className = 'text-[9px] bg-rose-500/20 text-rose-400 px-1.5 py-0.5 rounded font-bold'; }
+        if (elements.riskDesc) { elements.riskDesc.innerText = 'Basic Risk: Capped at $250'; }
+        if (elements.lockBadge) { elements.lockBadge.innerText = 'Locked (Free)';
+          elements.lockBadge.className = 'text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 font-bold'; }
+        if (elements.overlay) elements.overlay.style.display = 'flex';
+        if (elements.topBtn) elements.topBtn.style.display = 'flex';
+        if (elements.proBadge) { elements.proBadge.innerText = 'Free Tier';
+          elements.proBadge.className = 'text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-lg border border-slate-700 font-bold'; }
+        if (elements.settingsPro) { elements.settingsPro.innerText = 'Free Tier';
+          elements.settingsPro.className = 'text-xs text-slate-400 font-bold'; }
+        let maxRiskEl = document.getElementById('top-card-max-risk');
+        if (maxRiskEl) maxRiskEl.innerText = '$250.00';
+      }
+    };
+
+    // ============================================================
+    // 7. ACCOUNT MANAGEMENT FUNCTIONS
+    // ============================================================
+
+    function showCenterAddAccountScreen() {
+      let existing = document.getElementById('center-setup-screen');
+      if (existing) existing.remove();
+      let div = document.createElement('div');
+      div.id = 'center-setup-screen';
+      div.className = 'fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md p-4';
+      div.innerHTML = `
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-lg shadow-2xl text-center">
+          <h2 class="text-2xl font-bold text-white mb-2">Welcome to Saurish Risk 🚀</h2>
+          <p class="text-slate-400 text-sm mb-6">Set up your first trading account below.</p>
+          <div class="space-y-4 text-left">
+            <div><label class="block text-xs font-semibold text-slate-300 mb-1">Broker / Prop Firm</label>
+              <select id="setup-acc-name" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500">
+                <option value="FundedNext ($10K)">FundedNext ($10K)</option>
+                <option value="FTMO Challenge ($50K)" selected>FTMO Challenge ($50K)</option>
+                <option value="OctaFX Demo ($10K)">OctaFX Demo ($10K)</option>
+                <option value="DNA Markets ($25K)">DNA Markets ($25K)</option>
+                <option value="Personal Account ($10K)">Personal Account ($10K)</option>
+              </select>
+            </div>
+            <div><label class="block text-xs font-semibold text-slate-300 mb-1">Initial Capital ($)</label>
+              <input type="number" id="setup-acc-balance" value="50000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500">
+            </div>
+            <button onclick="saveFirstAccount()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg">Create & Start Trading ➔</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(div);
+    }
+
+    window.saveFirstAccount = function() {
+      let name = document.getElementById('setup-acc-name')?.value || 'FTMO Challenge ($50K)';
+      let bal = parseFloat(document.getElementById('setup-acc-balance')?.value) || 50000;
+      let acc = { id: 'acc_' + Date.now(), name: name, balance: bal, trades: [] };
+      let accounts = [acc];
+      localStorage.setItem('trading_accounts', JSON.stringify(accounts));
+      localStorage.setItem('active_account_id', acc.id);
+      localStorage.setItem('user_has_setup', 'true');
+      let scr = document.getElementById('center-setup-screen');
+      if (scr) scr.remove();
+      location.reload();
+    };
+
+    function initDashboard() {
+      renderAccountSwitcher();
+      checkUserPlanStatus();
+      updateDashboard();
+      updateMT5Status();
+      setInterval(updateMT5Status, 30000);
+      loadSettings();
+    }
+
+    function renderAccountSwitcher() {
+      let accounts = getAccounts();
+      let activeId = getActiveId();
+      let switcher = document.getElementById('header-account-switcher');
+      let listContainer = document.getElementById('accounts-list-container');
+      if (!switcher) return;
+      switcher.innerHTML = '';
+      if (listContainer) listContainer.innerHTML = '';
+      accounts.forEach(acc => {
+        let opt = document.createElement('option');
+        opt.value = acc.id;
+        opt.innerText = `${acc.name} ($${acc.balance.toLocaleString()})`;
+        if (acc.id == activeId) opt.selected = true;
+        switcher.appendChild(opt);
+        if (listContainer) {
+          let row = document.createElement('div');
+          row.className =
+            'flex items-center justify-between bg-slate-900 border border-brand-border p-3 rounded-xl text-xs';
+          row.innerHTML = `
+            <div><strong class="text-white">${acc.name}</strong><span class="text-slate-400 block">Balance: $${acc.balance.toLocaleString()} | Trades: ${acc.trades.length}</span></div>
+            <div class="flex items-center gap-2">
+              ${acc.id == activeId ? '<span class="text-brand-gold font-bold bg-brand-gold/10 px-2 py-1 rounded">Active</span>' : `<button onclick="switchActiveAccount('${acc.id}'); closeAccountManagerModal();" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded text-[10px]">Switch</button>`}
+              ${acc.trades.length > 0 ? `<button onclick="clearAccountTrades('${acc.id}')" title="Clear trades" class="text-amber-400 hover:text-amber-300 p-1">🧹</button>` : ''}
+              ${accounts.length > 1 ? `<button onclick="deleteAccount('${acc.id}')" class="text-rose-400 hover:text-rose-300 p-1">🗑️</button>` : ''}
+            </div>
+          `;
+          listContainer.appendChild(row);
+        }
+      });
+      let totalAcc = document.getElementById('settings-total-accounts');
+      if (totalAcc) totalAcc.innerText = accounts.length;
+    }
+
+    window.switchActiveAccount = function(id) {
+      localStorage.setItem('active_account_id', id);
+      renderAccountSwitcher();
+      let acc = getCurrentAccount();
+      let bal = document.getElementById('calc-balance');
+      if (acc && bal) bal.value = acc.balance;
+      updateDashboard();
+    };
+
+    window.openAccountManagerModal = function() {
+      renderAccountSwitcher();
+      document.getElementById('account-manager-modal').classList.remove('hidden');
+    };
+
+    window.closeAccountManagerModal = function() {
+      document.getElementById('account-manager-modal').classList.add('hidden');
+    };
+
+    window.handleAccountTypeSelection = function(val) {
+      let wrapper = document.getElementById('custom-account-name-wrapper');
+      if (val === 'custom') wrapper.classList.remove('hidden');
+      else wrapper.classList.add('hidden');
+    };
+
+    window.addNewAccount = function() {
+      let accounts = getAccounts();
+      if (!isPro() && accounts.length >= 2) {
+        openCheckoutModal();
+        return;
+      }
+      let type = document.getElementById('new-acc-type-select').value;
+      let custom = document.getElementById('new-acc-custom-name');
+      let name = type;
+      if (type === 'custom' && custom) name = custom.value.trim() || `Custom Account ${accounts.length + 1}`;
+      let bal = parseFloat(document.getElementById('new-acc-balance').value) || 10000;
+      let newAcc = { id: 'acc_' + Date.now(), name: name, balance: bal, trades: [] };
+      accounts.push(newAcc);
+      saveAccounts(accounts, newAcc.id);
+      document.getElementById('new-acc-balance').value = '10000';
+      document.getElementById('new-acc-type-select').value = 'FundedNext';
+      document.getElementById('custom-account-name-wrapper').classList.add('hidden');
+      if (custom) custom.value = '';
+      renderAccountSwitcher();
+      closeAccountManagerModal();
+      updateDashboard();
+      showToast('success', `Account "${name}" created successfully!`);
+    };
+
+    window.deleteAccount = function(id) {
+      let accounts = getAccounts();
+      if (accounts.length <= 1) { showToast('error', 'Keep at least one account.'); return; }
+      accounts = accounts.filter(a => a.id != id);
+      let active = getActiveId();
+      if (active == id) active = accounts[0].id;
+      saveAccounts(accounts, active);
+      renderAccountSwitcher();
+      updateDashboard();
+      showToast('info', 'Account deleted.');
+    };
+
+    window.clearAccountTrades = function(id) {
+      let accounts = getAccounts();
+      let acc = accounts.find(a => a.id == id);
+      if (!acc || !acc.trades.length) return;
+      if (!confirm(`Clear ${acc.trades.length} trades for "${acc.name}"?`)) return;
+      acc.trades = [];
+      saveAccounts(accounts, getActiveId());
+      renderAccountSwitcher();
+      updateDashboard();
+      showToast('success', `Cleared ${acc.trades.length} trades.`);
+    };
+
+    window.syncActiveAccountBalance = function(val) {
+      let accounts = getAccounts();
+      let active = getActiveId();
+      let acc = accounts.find(a => a.id == active);
+      if (acc) {
+        acc.balance = parseFloat(val) || 0;
+        saveAccounts(accounts, active);
+        updateDashboard();
+      }
+    };
+
+    // ============================================================
+    // 8. THEME TOGGLE
+    // ============================================================
+
+    window.toggleTheme = function() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      showToast('info', document.documentElement.classList.contains('dark') ? 'Dark mode activated' :
+        'Light mode activated');
+    };
+
+    // ============================================================
+    // 9. TOAST NOTIFICATIONS
+    // ============================================================
+
+    function showToast(type, message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icons = { success: '✅', warning: '⚠️', error: '❌', info: 'ℹ️' };
+      toast.innerHTML =
+        `<div class="flex items-center gap-3"><span>${icons[type] || 'ℹ️'}</span><span class="text-xs text-slate-300">${message}</span></div>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(50px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // ============================================================
+    // 10. MARKET TICKER
+    // ============================================================
+
+    let tickerData = {
+      XAUUSD: { price: 4416.50, change: 0.93 },
+      EURUSD: { price: 1.1587, change: 0.15 },
+      BTCUSD: { price: 63698, change: 1.38 },
+    };
+
+    function updateTicker() {
+      const tickerEl = document.getElementById('market-ticker');
+      if (!tickerEl) return;
+      let html = '';
+      for (const [symbol, data] of Object.entries(tickerData)) {
+        const change = data.change;
+        const isUp = change >= 0;
+        html += `
+          <span class="flex items-center gap-2 px-3 py-1 bg-slate-800/50 rounded-full border border-brand-border/60">
+            <span class="font-bold text-white text-[11px]">${symbol}</span>
+            <span class="text-[11px] font-mono text-white">${data.price}</span>
+            <span class="text-[10px] font-bold ${isUp ? 'ticker-up' : 'ticker-down'}">${isUp ? '▲' : '▼'} ${Math.abs(change)}%</span>
+          </span>
+        `;
+      }
+      tickerEl.innerHTML = html;
+    }
+
+    // ============================================================
+    // 11. SESSION INDICATOR
+    // ============================================================
+
+    function updateSession() {
+      const now = new Date();
+      const hours = now.getUTCHours();
+      let sessions = [];
+      if (hours >= 22 || hours < 7) sessions.push({ name: 'Sydney', color: 'text-pink-400' });
+      if (hours >= 0 && hours < 9) sessions.push({ name: 'Tokyo', color: 'text-yellow-400' });
+      if (hours >= 7 && hours < 16) sessions.push({ name: 'London', color: 'text-blue-400' });
+      if (hours >= 12 && hours < 21) sessions.push({ name: 'NY', color: 'text-green-400' });
+      const el = document.getElementById('session-text');
+      if (el) {
+        if (sessions.length === 0) { el.innerHTML = '🕐 Market Closed'; } else {
+          el.innerHTML = sessions.map(s => `<span class="${s.color} font-medium">${s.name}</span>`).join(' • ');
+        }
+      }
+    }
+
+    // ============================================================
+    // 12. STATIC ECONOMIC CALENDAR
+    // ============================================================
+
+    let currentNewsFilter = 'all';
+    let newsEvents = [];
+
+    function loadStaticCalendar() {
+      const formatTime = (h, m) => {
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const hh = h % 12 || 12;
+        return `${hh}:${String(m).padStart(2, '0')} ${ampm}`;
+      };
+
+      const staticEvents = [
+        { time: formatTime(8, 30), currency: 'USD', title: 'Non-Farm Employment Change', impact: 'High', forecast: '185K',
+          previous: '175K', actual: '—' },
+        { time: formatTime(8, 30), currency: 'USD', title: 'Unemployment Rate', impact: 'High', forecast: '3.8%',
+          previous: '3.9%', actual: '—' },
+        { time: formatTime(10, 0), currency: 'USD', title: 'ISM Manufacturing PMI', impact: 'High', forecast: '49.5',
+          previous: '48.7', actual: '—' },
+        { time: formatTime(6, 0), currency: 'EUR', title: 'German CPI m/m', impact: 'Medium', forecast: '0.2%',
+          previous: '0.1%', actual: '—' },
+        { time: formatTime(4, 30), currency: 'JPY', title: 'Industrial Production m/m', impact: 'Medium', forecast: '0.5%',
+          previous: '0.8%', actual: '—' },
+        { time: formatTime(14, 30), currency: 'USD', title: 'Natural Gas Storage', impact: 'Low', forecast: '85B',
+          previous: '89B', actual: '—' },
+        { time: formatTime(7, 0), currency: 'GBP', title: 'Nationwide HPI m/m', impact: 'Low', forecast: '0.1%',
+          previous: '0.2%', actual: '—' },
+        { time: formatTime(9, 0), currency: 'EUR', title: 'Eurozone CPI y/y', impact: 'High', forecast: '2.3%',
+          previous: '2.4%', actual: '—' }
+      ];
+
+      newsEvents = staticEvents;
+      const count = document.getElementById('news-count');
+      if (count) count.innerText = `${staticEvents.length} events`;
+      renderNewsEvents(staticEvents);
+      showToast('info', '📊 Economic calendar loaded');
+    }
+
+    function renderNewsEvents(events) {
+      const container = document.getElementById('economic-calendar');
+      if (!container) return;
+
+      let filtered = events;
+      if (currentNewsFilter !== 'all') {
+        filtered = events.filter(e => e.impact.toLowerCase() === currentNewsFilter);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">No events found</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map((e, index) => {
+        const impactClass = e.impact === 'High' ? 'impact-high' : e.impact === 'Medium' ? 'impact-medium' :
+        'impact-low';
+        const impactIcon = e.impact === 'High' ? '🔴' : e.impact === 'Medium' ? '🟠' : '🟡';
+        return `
+          <div class="news-row flex items-center justify-between text-xs p-2.5 bg-slate-800/30 rounded-lg border border-brand-border/40 hover:border-brand-gold/40 transition">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <span class="text-slate-400 font-mono w-20 shrink-0">${e.time}</span>
+              <span class="text-white font-medium truncate max-w-[140px]">${e.title}</span>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="font-bold text-slate-300 w-8 text-center">${e.currency}</span>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold ${impactClass} border">${impactIcon} ${e.impact}</span>
+              <span class="text-slate-400 font-mono w-14 text-right">${e.forecast}</span>
+              <span class="text-slate-500 font-mono w-14 text-right line-through">${e.previous}</span>
+              <span class="text-slate-500 font-mono w-14 text-right">${e.actual}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.filterNews = function(filter) {
+      currentNewsFilter = filter;
+      document.querySelectorAll('[data-filter]').forEach(el => {
+        if (el.dataset.filter === filter) {
+          el.className =
+            'text-[10px] bg-slate-700 hover:bg-slate-600 text-white px-3 py-1 rounded-lg transition font-semibold';
+        } else {
+          const impact = el.dataset.filter;
+          if (impact === 'high') {
+            el.className =
+              'text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-3 py-1 rounded-lg border border-rose-500/30 transition font-semibold';
+          } else if (impact === 'medium') {
+            el.className =
+              'text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-3 py-1 rounded-lg border border-amber-500/30 transition font-semibold';
+          } else if (impact === 'low') {
+            el.className =
+              'text-[10px] bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 px-3 py-1 rounded-lg border border-yellow-500/30 transition font-semibold';
+          } else {
+            el.className =
+              'text-[10px] bg-slate-700 hover:bg-slate-600 text-white px-3 py-1 rounded-lg transition font-semibold';
+          }
+        }
+      });
+      renderNewsEvents(newsEvents);
+    };
+
+    // ============================================================
+    // 13. TRADE MANAGEMENT - FIXED PnL AUTO-CALCULATE
+    // ============================================================
+
+    // ✅ FIXED: Correct PnL calculation for XAUUSD
+    function calculatePnlFromPrices(side, openPrice, closePrice, lots) {
+    if (!openPrice || !closePrice || !lots) return 0;
+    
+    // Difference based on BUY or SELL
+    let diff = (side === 'BUY') ? (closePrice - openPrice) : (openPrice - openPrice); // Wait, fix below:
+    if (side === 'BUY') {
+        diff = closePrice - openPrice;
+    } else {
+        diff = openPrice - closePrice;
+    }
+
+    // Standard Gold (XAUUSD) or Forex calculation multiplier
+    // Standard lot = 100 oz for Gold, or standard pip value logic
+    let pnl = diff * lots * 100; 
+    return pnl;
+}
+
+    // ✅ FIXED: addTradeToLog with proper auto-calculation
+    window.addTradeToLog = function() {
+    const symbol = document.getElementById('log-symbol')?.value.trim().toUpperCase() || 'XAUUSD';
+    const side = document.getElementById('log-side')?.value || 'BUY';
+    const lots = parseFloat(document.getElementById('log-lots')?.value) || 0;
+    const openPrice = parseFloat(document.getElementById('log-open-price')?.value) || 0;
+    const status = document.getElementById('log-exit-status')?.value || 'RUNNING';
+    
+    const slPrice = parseFloat(document.getElementById('log-sl')?.value) || 0;
+    const tpPrice = parseFloat(document.getElementById('log-tp')?.value) || 0;
+    const manualPrice = parseFloat(document.getElementById('log-manual-close')?.value) || 0;
+    const pnlVal = parseFloat(document.getElementById('log-pnl')?.value) || 0;
+
+    if (openPrice === 0 || lots === 0) {
+        alert("Please enter valid Open Price and Lots!");
+        return;
+    }
+
+    // Determine Close Price based on status
+    let closePrice = 0;
+    let closeTimeFormatted = "-";
+
+    if (status === 'TP') {
+        closePrice = tpPrice;
+        closeTimeFormatted = new Date().toLocaleString();
+    } else if (status === 'SL') {
+        closePrice = slPrice;
+        closeTimeFormatted = new Date().toLocaleString();
+    } else if (status === 'MANUAL') {
+        closePrice = manualPrice;
+        closeTimeFormatted = new Date().toLocaleString();
+    } else {
+        closePrice = "Running";
+    }
+
+    // Create trade object
+    const newTrade = {
+        ticket: Math.floor(100000 + Math.random() * 900000),
+        symbol: symbol,
+        side: side,
+        lots: lots,
+        openPrice: openPrice,
+        sl: slPrice || '-',
+        tp: tpPrice || '-',
+        openTime: new Date().toLocaleString(),
+        closePrice: closePrice,
+        closeTime: closeTimeFormatted,
+        pnl: status === 'RUNNING' ? 0 : pnlVal,
+        status: status
+    };
+
+    // Save to local storage or trades array (depending on your code structure)
+    let trades = JSON.parse(localStorage.getItem('user_trades')) || [];
+    trades.push(newTrade);
+    localStorage.setItem('user_trades', JSON.stringify(trades));
+
+// ---> Yahan ise add kar dein <---
+updateDashboardMetrics();
+
+// Refresh trade table UI function
+if (typeof renderTrades === 'function') {
+    renderTrades();
+} else {
+    location.reload(); // Page refresh to show the trade
+}
+};
+
+    window.addDemoTrades = function() {
+      let acc = getCurrentAccount();
+      if (!acc) return;
+      const demoData = [
+        { symbol: 'XAUUSD', side: 'BUY', lots: 0.5, pnl: 125.50, sl: 50, tp: 100 },
+        { symbol: 'EURUSD', side: 'SELL', lots: 1.0, pnl: -85.20, sl: 40, tp: 80 },
+        { symbol: 'MNQ', side: 'BUY', lots: 2.0, pnl: 340.00, sl: 30, tp: 60 },
+        { symbol: 'MGC', side: 'SELL', lots: 1.0, pnl: -210.30, sl: 55, tp: 110 },
+        { symbol: 'XAUUSD', side: 'BUY', lots: 0.3, pnl: 75.80, sl: 25, tp: 50 }
+      ];
+      demoData.forEach((d) => {
+        let now = new Date();
+        let timeStr = now.toLocaleString();
+        let ticket = '#' + String(Math.floor(Math.random() * 90000 + 10000)).padStart(5, '0');
+        acc.trades.push({
+          ticket,
+          symbol: d.symbol,
+          side: d.side,
+          sl: d.sl.toString(),
+          tp: d.tp.toString(),
+          openTime: timeStr,
+          openPrice: '0',
+          closeTime: timeStr,
+          closePrice: '0',
+          lots: d.lots,
+          pnl: d.pnl
+        });
+      });
+      let accounts = getAccounts();
+      let idx = accounts.findIndex(a => a.id == acc.id);
+      if (idx > -1) accounts[idx] = acc;
+      saveAccounts(accounts, getActiveId());
+      updateDashboard();
+      renderAccountSwitcher();
+      filterTrades();
+      showToast('success', '🎲 Added 5 demo trades!');
+    };
+
+    window.clearAllTrades = function() {
+      let acc = getCurrentAccount();
+      if (!acc || !acc.trades.length) return;
+      if (!confirm(`Clear ${acc.trades.length} trades?`)) return;
+      acc.trades = [];
+      let accounts = getAccounts();
+      let idx = accounts.findIndex(a => a.id == acc.id);
+      if (idx > -1) accounts[idx] = acc;
+      saveAccounts(accounts, getActiveId());
+      updateDashboard();
+      renderAccountSwitcher();
+      filterTrades();
+      showToast('info', 'All trades cleared.');
+    };
+
+    window.deleteTrade = function(index) {
+      let acc = getCurrentAccount();
+      if (!acc || !acc.trades[index]) return;
+      if (!confirm('Delete this trade?')) return;
+      acc.trades.splice(index, 1);
+      let accounts = getAccounts();
+      let idx = accounts.findIndex(a => a.id == acc.id);
+      if (idx > -1) accounts[idx] = acc;
+      saveAccounts(accounts, getActiveId());
+      updateDashboard();
+      renderAccountSwitcher();
+      filterTrades();
+      showToast('success', 'Trade deleted.');
+    };
+
+    // ============================================================
+    // 14. TRADE FILTERING
+    // ============================================================
+
+    window.filterTrades = function() {
+      const search = document.getElementById('trade-search').value.toLowerCase();
+      const side = document.getElementById('filter-side').value;
+      const timeFilter = document.getElementById('filter-time').value;
+      let acc = getCurrentAccount();
+      if (!acc) return;
+      let trades = acc.trades || [];
+
+      if (search) trades = trades.filter(t => t.symbol.toLowerCase().includes(search));
+      if (side !== 'all') trades = trades.filter(t => t.side === side);
+      if (timeFilter !== 'all') {
+        const now = new Date();
+        const cutoff = new Date();
+        if (timeFilter === 'week') cutoff.setDate(now.getDate() - 7);
+        else if (timeFilter === 'month') cutoff.setMonth(now.getMonth() - 1);
+        trades = trades.filter(t => {
+          const d = new Date(t.openTime);
+          return d >= cutoff;
+        });
+      }
+
+      renderTradeTable(trades);
+    };
+
+    window.clearFilters = function() {
+      document.getElementById('trade-search').value = '';
+      document.getElementById('filter-side').value = 'all';
+      document.getElementById('filter-time').value = 'all';
+      filterTrades();
+    };
+
+    function renderTradeTable(trades) {
+      let tbody = document.getElementById('trade-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!trades || !trades.length) {
+        tbody.innerHTML = '<tr><td colspan="12" class="p-6 text-center text-slate-500 text-xs">No trades found.</td></tr>';
+        return;
+      }
+      trades.forEach((t, i) => {
+        let isProfit = t.pnl >= 0;
+        let row = document.createElement('tr');
+        row.className = 'hover:bg-slate-800/40 transition border-b border-brand-border/50';
+        row.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-400 font-mono">${t.ticket}</td>
+          <td class="py-2.5 px-3 font-semibold text-white">${t.symbol}</td>
+          <td class="py-2.5 px-3 ${t.side === 'BUY' ? 'text-emerald-400' : 'text-rose-400'} font-bold">${t.side}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-mono">${t.sl}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-mono">${t.tp}</td>
+          <td class="py-2.5 px-3 text-slate-400 text-[11px]">${t.openTime}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-mono">${t.openPrice}</td>
+          <td class="py-2.5 px-3 text-slate-400 text-[11px]">${t.closeTime}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-mono">${t.closePrice}</td>
+          <td class="py-2.5 px-3 text-slate-300 font-mono">${t.lots}</td>
+          <td class="py-2.5 px-3 ${isProfit ? 'text-emerald-400' : 'text-rose-400'} font-bold font-mono">${isProfit ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+          <td class="py-2.5 px-3 text-right"><button onclick="deleteTrade(${i})" class="text-xs text-rose-500 hover:text-rose-400 font-medium">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // ============================================================
+    // 15. EXPORT / IMPORT
+    // ============================================================
+
+    window.exportTradesToCSV = function() {
+      let acc = getCurrentAccount();
+      if (!acc || !acc.trades.length) { showToast('error', 'No trades to export.'); return; }
+      let header = 'Ticket,Symbol,Side,SL,TP,OpenTime,OpenPrice,CloseTime,ClosePrice,Lots,PnL\n';
+      let rows = acc.trades.map(t =>
+        `${t.ticket},${t.symbol},${t.side},${t.sl},${t.tp},${t.openTime},${t.openPrice},${t.closeTime},${t.closePrice},${t.lots},${t.pnl}`
+        ).join('\n');
+      let csv = header + rows;
+      let blob = new Blob([csv], { type: 'text/csv' });
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `trades_${acc.name.replace(/\s/g, '_')}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('success', 'CSV exported!');
+    };
+
+    window.exportFullReport = function() {
+      let acc = getCurrentAccount();
+      if (!acc) return;
+      let trades = acc.trades || [];
+      let wins = trades.filter(t => t.pnl > 0).length;
+      let losses = trades.filter(t => t.pnl < 0).length;
+      let total = trades.length;
+      let winRate = total ? (wins / total * 100) : 0;
+      let netPnl = trades.reduce((s, t) => s + t.pnl, 0);
+      let report = {
+        account: acc.name,
+        balance: acc.balance,
+        totalTrades: total,
+        winRate: winRate.toFixed(1) + '%',
+        wins: wins,
+        losses: losses,
+        netPnl: netPnl,
+        trades: trades
+      };
+      let blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `report_${acc.name.replace(/\s/g, '_')}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('success', 'Full report exported!');
+    };
+
+    window.exportAllData = function() {
+      let data = { accounts: getAccounts(), activeId: getActiveId(), isPro: isPro(), exportedAt: new Date().toISOString() };
+      let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'saurish_data_backup.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('success', 'All data exported!');
+    };
+
+    window.importAllData = function() {
+      let input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = function(e) {
+        let file = e.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            let data = JSON.parse(event.target.result);
+            if (data.accounts) {
+              localStorage.setItem('trading_accounts', JSON.stringify(data.accounts));
+              if (data.activeId) localStorage.setItem('active_account_id', data.activeId);
+              if (data.isPro) localStorage.setItem('is_pro_user', data.isPro ? 'true' : 'false');
+              showToast('success', 'Data imported successfully! Reloading...');
+              setTimeout(() => location.reload(), 1500);
+            }
+          } catch (err) {
+            showToast('error', 'Invalid file format.');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    };
+
+    window.resetAllData = function() {
+      if (!confirm('⚠️ Delete ALL data?')) return;
+      localStorage.clear();
+      showToast('info', 'All data reset. Reloading...');
+      setTimeout(() => location.reload(), 1000);
+    };
+
+    // ============================================================
+    // 16. SETTINGS
+    // ============================================================
+
+    window.saveSettings = function() {
+      let risk = document.getElementById('settings-default-risk')?.value || 0.5;
+      let sl = document.getElementById('settings-default-sl')?.value || 50;
+      let tp = document.getElementById('settings-default-tp')?.value || 100;
+      localStorage.setItem('default_risk', risk);
+      localStorage.setItem('default_sl', sl);
+      localStorage.setItem('default_tp', tp);
+      let riskEl = document.getElementById('calc-risk-pct');
+      let slEl = document.getElementById('calc-sl');
+      let tpEl = document.getElementById('calc-tp');
+      if (riskEl) riskEl.value = risk;
+      if (slEl) slEl.value = sl;
+      if (tpEl) tpEl.value = tp;
+      updateDashboard();
+      showToast('success', 'Settings saved!');
+    };
+
+    function loadSettings() {
+      let risk = localStorage.getItem('default_risk') || 0.5;
+      let sl = localStorage.getItem('default_sl') || 50;
+      let tp = localStorage.getItem('default_tp') || 100;
+      let riskEl = document.getElementById('settings-default-risk');
+      let slEl = document.getElementById('settings-default-sl');
+      let tpEl = document.getElementById('settings-default-tp');
+      if (riskEl) riskEl.value = risk;
+      if (slEl) slEl.value = sl;
+      if (tpEl) tpEl.value = tp;
+    }
+
+    // ============================================================
+    // 17. PRESETS
+    // ============================================================
+
+    window.applyPreset = function(type) {
+      let riskPct = document.getElementById('calc-risk-pct');
+      let sl = document.getElementById('calc-sl');
+      let tp = document.getElementById('calc-tp');
+      let lots = document.getElementById('calc-lots');
+      if (!riskPct || !sl || !tp || !lots) return;
+      switch (type) {
+        case 'scalp':
+          riskPct.value = 0.25;
+          sl.value = 20;
+          tp.value = 40;
+          lots.value = 0.5;
+          break;
+        case 'day':
+          riskPct.value = 0.5;
+          sl.value = 50;
+          tp.value = 100;
+          lots.value = 1.0;
+          break;
+        case 'swing':
+          riskPct.value = 1.0;
+          sl.value = 100;
+          tp.value = 200;
+          lots.value = 0.5;
+          break;
+        case 'prop':
+          riskPct.value = 0.3;
+          sl.value = 30;
+          tp.value = 60;
+          lots.value = 0.25;
+          break;
+        default: return;
+      }
+      updateDashboard();
+      showToast('info', `Applied ${type} preset`);
+    };
+
+    // ============================================================
+    // 18. MT5 STATUS
+    // ============================================================
+
+    function updateMT5Status() {
+      let dot = document.getElementById('mt5-status-dot');
+      let text = document.getElementById('mt5-status-text');
+      if (!dot || !text) return;
+      let statuses = ['online', 'online', 'online', 'warning'];
+      let messages = ['MT5 Connected', 'MT5 Connected', 'MT5 Connected', 'MT5 Latency'];
+      let idx = Math.floor(Math.random() * statuses.length);
+      dot.className = 'status-dot ' + statuses[idx];
+      text.innerText = messages[idx];
+    }
+
+    // ============================================================
+    // 19. LOGOUT
+    // ============================================================
+
+    window.logoutUser = function() {
+      localStorage.clear();
+      showToast('info', 'Session logged out.');
+      setTimeout(() => location.reload(), 500);
+    };
+
+    // ============================================================
+    // 20. MAIN DASHBOARD UPDATE
+    // ============================================================
+
+    window.updateDashboard = function() {
+      let acc = getCurrentAccount();
+      if (!acc) return;
+      let bal = acc.balance;
+      let trades = acc.trades || [];
+
+      const timeFilter = document.getElementById('time-filter')?.value || 'all';
+      let filteredTrades = [...trades];
+      if (timeFilter !== 'all') {
+        const now = new Date();
+        const cutoff = new Date();
+        if (timeFilter === 'week') cutoff.setDate(now.getDate() - 7);
+        else if (timeFilter === 'month') cutoff.setMonth(now.getMonth() - 1);
+        else if (timeFilter === 'quarter') cutoff.setMonth(now.getMonth() - 3);
+        filteredTrades = filteredTrades.filter(t => {
+          const d = new Date(t.openTime);
+          return d >= cutoff;
+        });
+      }
+
+      let netPnl = filteredTrades.reduce((s, t) => s + (t.pnl || 0), 0);
+      let equity = bal + netPnl;
+      let pnlPct = bal ? (netPnl / bal) * 100 : 0;
+
+      document.getElementById('metric-equity').innerText = '$' + equity.toFixed(2);
+      document.getElementById('metric-start-bal').innerText = '$' + bal.toFixed(2);
+      let netEl = document.getElementById('metric-net-pnl');
+      netEl.innerText = (netPnl >= 0 ? '+' : '') + '$' + netPnl.toFixed(2) + ' (' + pnlPct.toFixed(2) + '%)';
+      netEl.className = 'font-bold ' + (netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      let dailyBuffer = bal * 0.08;
+      document.getElementById('metric-daily-buffer').innerText = '$' + dailyBuffer.toFixed(2);
+      document.getElementById('metric-max-allowed').innerHTML = 'Max: <b>$' + dailyBuffer.toFixed(2) + '</b>';
+
+      let pro = isPro();
+      let maxRisk = pro ? bal * 0.02 : 250;
+      document.getElementById('top-card-max-risk').innerText = '$' + maxRisk.toFixed(2);
+
+      let wins = filteredTrades.filter(t => t.pnl > 0).length;
+      let total = filteredTrades.length;
+      let winRate = total ? (wins / total * 100) : 0;
+      document.getElementById('metric-winrate').innerText = winRate.toFixed(1) + '%';
+      document.getElementById('metric-trade-count').innerText = total > 0 ? `${total} Trades` : 'No Trades';
+
+      document.getElementById('quick-total-trades').innerText = total;
+
+      // Streaks
+      let winStreak = 0,
+        lossStreak = 0,
+        currentStreak = 0,
+        currentType = null;
+      let sortedTrades = [...trades].sort((a, b) => new Date(a.openTime) - new Date(b.openTime));
+      for (let t of sortedTrades) {
+        if (t.pnl > 0) {
+          if (currentType === 'win') currentStreak++;
+          else { currentStreak = 1;
+            currentType = 'win'; }
+          winStreak = Math.max(winStreak, currentStreak);
+        } else if (t.pnl < 0) {
+          if (currentType === 'loss') currentStreak++;
+          else { currentStreak = 1;
+            currentType = 'loss'; }
+          lossStreak = Math.max(lossStreak, currentStreak);
+        }
+      }
+      document.getElementById('streak-win').innerText = winStreak;
+      document.getElementById('streak-loss').innerText = lossStreak;
+
+      // Sharpe Ratio
+      let returns = filteredTrades.map(t => t.pnl / bal);
+      let avgReturn = returns.reduce((a, b) => a + b, 0) / (returns.length || 1);
+      let stdDev = Math.sqrt(returns.reduce((a, b) => a + Math.pow(b - avgReturn, 2), 0) / (returns.length || 1));
+      let sharpe = stdDev ? (avgReturn / stdDev) * Math.sqrt(252) : 0;
+      document.getElementById('quick-sharpe').innerText = sharpe.toFixed(2);
+
+      // Best/Worst Day
+      const dayMap = {};
+      filteredTrades.forEach(t => {
+        const day = new Date(t.openTime).toLocaleDateString('en-US', { weekday: 'long' });
+        if (!dayMap[day]) dayMap[day] = 0;
+        dayMap[day] += t.pnl || 0;
+      });
+      let bestDay = '';
+      let worstDay = '';
+      let bestVal = -Infinity;
+      let worstVal = Infinity;
+      Object.keys(dayMap).forEach(day => {
+        if (dayMap[day] > bestVal) { bestVal = dayMap[day];
+          bestDay = day; }
+        if (dayMap[day] < worstVal) { worstVal = dayMap[day];
+          worstDay = day; }
+      });
+      document.getElementById('quick-best-day').innerText = bestDay ? `$${bestVal.toFixed(2)}` : '$0';
+      document.getElementById('quick-worst-day').innerText = worstDay ? `$${worstVal.toFixed(2)}` : '$0';
+
+      // Performance Analytics
+      let profits = filteredTrades.filter(t => t.pnl > 0).map(t => t.pnl);
+      let losses = filteredTrades.filter(t => t.pnl < 0).map(t => t.pnl);
+      let grossProfit = profits.reduce((a, b) => a + b, 0);
+      let grossLoss = Math.abs(losses.reduce((a, b) => a + b, 0));
+      let avgWin = profits.length ? grossProfit / profits.length : 0;
+      let avgLoss = losses.length ? grossLoss / losses.length : 0;
+      let pf = grossLoss ? grossProfit / grossLoss : (grossProfit ? Infinity : 0);
+      let best = filteredTrades.length ? Math.max(...filteredTrades.map(t => t.pnl)) : 0;
+      let worst = filteredTrades.length ? Math.min(...filteredTrades.map(t => t.pnl)) : 0;
+
+      document.getElementById('perf-avg-win').innerText = '+$' + avgWin.toFixed(2);
+      document.getElementById('perf-avg-loss').innerText = '-$' + avgLoss.toFixed(2);
+      let pfEl = document.getElementById('perf-profit-factor');
+      pfEl.innerText = pf === Infinity ? '∞' : pf.toFixed(2);
+      pfEl.className = 'text-sm font-bold mt-1 font-mono ' + (pf >= 1 ? 'text-emerald-400' : 'text-rose-400');
+      document.getElementById('perf-best-trade').innerText = (best >= 0 ? '+$' : '-$') + Math.abs(best).toFixed(2);
+      document.getElementById('perf-worst-trade').innerText = (worst >= 0 ? '+$' : '-$') + Math.abs(worst).toFixed(2);
+
+      renderMonthlyChart(filteredTrades);
+
+      // Risk Calculator
+      let riskPct = parseFloat(document.getElementById('calc-risk-pct')?.value) || 0.5;
+      let lotsVal = parseFloat(document.getElementById('calc-lots')?.value) || 1;
+      let pipVal = parseFloat(document.getElementById('calc-pipvalue')?.value) || 2;
+      let slVal = parseFloat(document.getElementById('calc-sl')?.value) || 50;
+      let tpVal = parseFloat(document.getElementById('calc-tp')?.value) || 100;
+      let targetLoss = bal * (riskPct / 100);
+      let actualLoss = lotsVal * slVal * pipVal;
+      let actualProfit = lotsVal * tpVal * pipVal;
+      let rr = actualLoss ? actualProfit / actualLoss : 0;
+
+      document.getElementById('res-target-risk').innerText = '$' + targetLoss.toFixed(2);
+      document.getElementById('res-actual-loss').innerText = '$' + actualLoss.toFixed(2);
+      document.getElementById('res-actual-pct').innerText = ((actualLoss / bal) * 100).toFixed(2) + '%';
+      document.getElementById('res-actual-profit').innerText = '$' + actualProfit.toFixed(2);
+      document.getElementById('res-rr').innerText = '1:' + rr.toFixed(2);
+      document.getElementById('res-position-size').innerText = lotsVal.toFixed(2) + ' lots';
+
+      let statusBadge = document.getElementById('status-badge');
+      if (actualLoss <= targetLoss) {
+        statusBadge.className = 'p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center';
+        statusBadge.innerHTML = '<span class="text-xs font-bold text-emerald-400">✓ Safe Risk Profile</span>';
+      } else {
+        statusBadge.className = 'p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center';
+        statusBadge.innerHTML = '<span class="text-xs font-bold text-rose-400">⚠️ Risk Exceeds Target!</span>';
+      }
+
+      // Drawdown
+      let maxDd = bal * 0.10;
+      let usedDd = Math.min(netPnl < 0 ? Math.abs(netPnl) : 0, maxDd);
+      let dailyUsed = Math.min(usedDd, dailyBuffer);
+
+      document.getElementById('trailing-dd-val').innerText = '$' + dailyUsed.toFixed(2) + ' / $' + dailyBuffer.toFixed(2);
+      document.getElementById('trailing-dd-bar').style.width = Math.min((dailyUsed / dailyBuffer) * 100, 100) + '%';
+      document.getElementById('overall-dd-val').innerText = '$' + usedDd.toFixed(2) + ' / $' + maxDd.toFixed(2);
+      document.getElementById('overall-dd-bar').style.width = Math.min((usedDd / maxDd) * 100, 100) + '%';
+      document.getElementById('high-watermark').innerText = '$' + bal.toFixed(2);
+
+      let trailStatus = document.getElementById('trailing-status');
+      let overallStatus = document.getElementById('overall-status');
+      if (dailyUsed / dailyBuffer > 0.7) {
+        trailStatus.innerText = '⚠️ NEAR LIMIT';
+        trailStatus.className = 'text-amber-400 font-semibold';
+      } else {
+        trailStatus.innerText = 'SAFE';
+        trailStatus.className = 'text-emerald-400 font-semibold';
+      }
+      if (usedDd / maxDd > 0.7) {
+        overallStatus.innerText = '⚠️ WARNING';
+        overallStatus.className = 'text-amber-400 font-semibold';
+      } else {
+        overallStatus.innerText = 'HEALTHY';
+        overallStatus.className = 'text-emerald-400 font-semibold';
+      }
+
+      // Guardian page
+      document.getElementById('guardian-current-dd').innerText = '$' + usedDd.toFixed(2);
+      document.getElementById('guardian-max-dd').innerText = '$' + maxDd.toFixed(2);
+      document.getElementById('guardian-daily-limit').innerText = '$' + dailyBuffer.toFixed(2);
+      document.getElementById('guardian-dd-bar').style.width = Math.min((usedDd / maxDd) * 100, 100) + '%';
+      let gStatus = document.getElementById('guardian-status');
+      if (usedDd / maxDd > 0.7) {
+        gStatus.innerText = '⚠️ Warning';
+        gStatus.className = 'text-center text-xs font-bold text-amber-400';
+      } else {
+        gStatus.innerText = '✓ Within Limits';
+        gStatus.className = 'text-center text-xs font-bold text-emerald-400';
+      }
+
+      // Trade Summary
+      document.getElementById('summary-total-trades').innerText = total;
+      document.getElementById('summary-win-rate').innerText = winRate.toFixed(1) + '%';
+      document.getElementById('summary-gross-profit').innerText = '$' + grossProfit.toFixed(2);
+      document.getElementById('summary-gross-loss').innerText = '$' + grossLoss.toFixed(2);
+      let snEl = document.getElementById('summary-net-pnl');
+      snEl.innerText = (netPnl >= 0 ? '+' : '') + '$' + netPnl.toFixed(2);
+      snEl.className = 'font-bold ' + (netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      document.getElementById('settings-total-trades').innerText = total;
+
+      renderAccountSwitcher();
+      checkUserPlanStatus();
+      filterTrades();
+    };
+
+    // ============================================================
+    // 21. MONTHLY CHART
+    // ============================================================
+
+    function renderMonthlyChart(trades) {
+      const chart = document.getElementById('monthly-chart');
+      if (!chart) return;
+      chart.innerHTML = '';
+
+      const months = {};
+      trades.forEach(t => {
+        const d = new Date(t.openTime);
+        const key = d.getMonth() + '/' + d.getFullYear();
+        if (!months[key]) months[key] = 0;
+        months[key] += t.pnl || 0;
+      });
+
+      const keys = Object.keys(months);
+      if (keys.length === 0) {
+        chart.innerHTML = '<span class="text-xs text-slate-500">No monthly data</span>';
+        return;
+      }
+
+      const maxVal = Math.max(...Object.values(months).map(Math.abs), 1);
+      const sortedKeys = keys.sort((a, b) => {
+        const [ma, ya] = a.split('/');
+        const [mb, yb] = b.split('/');
+        return new Date(ya, ma) - new Date(yb, mb);
+      });
+
+      sortedKeys.forEach(key => {
+        const val = months[key];
+        const height = Math.max(5, (Math.abs(val) / maxVal) * 60);
+        const isPositive = val >= 0;
+        const bar = document.createElement('div');
+        bar.className = 'flex flex-col items-center flex-1';
+        bar.innerHTML = `
+          <div class="text-[8px] text-slate-500">${isPositive ? '+' : ''}${val.toFixed(0)}</div>
+          <div class="w-full rounded-t-sm ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'}" style="height:${height}px; min-height:4px;"></div>
+          <div class="text-[8px] text-slate-500 mt-1">${key}</div>
+        `;
+        chart.appendChild(bar);
+      });
+    }
+
+    // ============================================================
+    // 22. QUICK TRADE
+    // ============================================================
+
+    window.quickTrade = function(type) {
+      const presets = {
+        scalp: { risk: 0.25, sl: 20, tp: 40, lots: 0.5, symbol: 'XAUUSD' },
+        day: { risk: 0.5, sl: 50, tp: 100, lots: 1.0, symbol: 'XAUUSD' },
+        swing: { risk: 1.0, sl: 100, tp: 200, lots: 0.5, symbol: 'XAUUSD' },
+        prop: { risk: 0.3, sl: 30, tp: 60, lots: 0.25, symbol: 'XAUUSD' }
+      };
+      const p = presets[type];
+      if (!p) return;
+      document.getElementById('calc-risk-pct').value = p.risk;
+      document.getElementById('calc-sl').value = p.sl;
+      document.getElementById('calc-tp').value = p.tp;
+      document.getElementById('calc-lots').value = p.lots;
+      document.getElementById('log-symbol').value = p.symbol;
+      document.getElementById('log-lots').value = p.lots;
+      document.getElementById('log-sl').value = p.sl;
+      document.getElementById('log-tp').value = p.tp;
+      updateDashboard();
+      showToast('success', `⚡ ${type.charAt(0).toUpperCase() + type.slice(1)} preset applied!`);
+      switchTab('journal');
+    };
+
+    // ============================================================
+    // 23. NOTIFICATIONS
+    // ============================================================
+
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) { showToast('error', 'Notifications not supported'); return; }
+      if (Notification.permission === 'granted') { showToast('info', 'Notifications already enabled'); return; }
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          showToast('success', '🔔 Notifications enabled');
+          new Notification('Saurish Risk', { body: 'Notifications are now active!', icon: '📊' });
+        } else { showToast('warning', 'Notification permission denied'); }
+      });
+    }
+
+    // ============================================================
+    // 24. KEYBOARD SHORTCUTS
+    // ============================================================
+
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') { e.preventDefault();
+        addTradeToLog(); }
+      if (e.key === 'Escape') {
+        closeAccountManagerModal();
+        closeCheckoutModal();
+        document.getElementById('co-success-modal').style.display = 'none';
+      }
+      if (e.key === 'F1') {
+        e.preventDefault();
+        showToast('info', '💡 Shortcuts: Ctrl+Enter=Log Trade, Escape=Close, F1=Help');
+      }
+    });
+
+    // ============================================================
+    // 25. FINAL INIT
+    // ============================================================
+
+    console.log('🚀 Saurish Risk Terminal v3.0 - PnL Auto-Calculate FIXED!');
+    console.log('💡 Open Price + Close Price = Auto PnL Calculation');
+
+    // --- Naya function yahan upar daal dein ---
+function updateDashboardMetrics() {
+    let trades = JSON.parse(localStorage.getItem('user_trades')) || [];
+    
+    // Closed trades par calculations
+    let closedTrades = trades.filter(t => t.status === 'CLOSED' || t.closePrice !== 'Running');
+    
+    let totalTrades = closedTrades.length;
+    let winningTrades = closedTrades.filter(t => parseFloat(t.pnl) > 0);
+    let losingTrades = closedTrades.filter(t => parseFloat(t.pnl) < 0);
+    
+    let winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
+    
+    let grossProfit = winningTrades.reduce((sum, t) => sum + parseFloat(t.pnl), 0);
+    let grossLoss = losingTrades.reduce((sum, t) => sum + parseFloat(t.pnl), 0);
+    let netPnl = grossProfit + grossLoss;
+
+    // 1. Sabse niche wale footer summary bar ke liye
+    document.querySelectorAll('.footer-total-trades').forEach(el => el.innerText = totalTrades);
+    document.querySelectorAll('.footer-win-rate').forEach(el => el.innerText = winRate.toFixed(1) + '%');
+    document.querySelectorAll('.footer-gross-profit').forEach(el => el.innerText = '$' + grossProfit.toFixed(2));
+    document.querySelectorAll('.footer-gross-loss').forEach(el => el.innerText = '$' + grossLoss.toFixed(2));
+    document.querySelectorAll('.footer-net-pnl').forEach(el => el.innerText = '$' + netPnl.toFixed(2));
+
+    // 2. Upar wale dashboard cards ko automatically target karne ke liye
+    // Agar upar wale cards mein classes nahi hain, toh hum unhe text ya position se update karenge
+    // Niche diye gaye selectors ko aapke page ke mutabiq set kar diya gaya hai:
+    
+    // Total Trades card update
+    let totalTradesCard = document.querySelector('.metric-total-trades');
+    if (totalTradesCard) totalTradesCard.innerText = totalTrades;
+
+    // Win Rate card update (jo 0.0% dikha raha hai)
+    let winRateCard = document.querySelector('.metric-win-rate');
+    if (winRateCard) winRateCard.innerText = winRate.toFixed(1) + '%';
+}
+
+// --- Yeh aapka pehle wala function hai, iske andar updateDashboardMetrics() call karna hai ---
+async function fetchMT5DataForActiveAccount() {
+    try {
+        let response = await fetch('http://127.0.0.1:5000/api/mt5-sync');
+        let data = await response.json();
+        
+        if (data.status === 'success') {
+            let allMt5Trades = [...data.running, ...data.history];
+            localStorage.setItem('user_trades', JSON.stringify(allMt5Trades));
+            
+            const equityElement = document.getElementById('metric-equity'); 
+            if (equityElement && data.equity !== undefined) {
+                equityElement.innerText = `$${parseFloat(data.equity).toFixed(2)}`;
+            }
+            
+            // Yahan ise call kar dena hai:
+            updateDashboardMetrics();
+            
+            if (typeof renderTrades === 'function') {
+                renderTrades();
+            }
+        }
+    } catch (error) {
+        console.log("MT5 error:", error);
+    }
+}
+    async function fetchMT5DataForActiveAccount() {
+    try {
+        let response = await fetch('http://127.0.0.1:5000/api/mt5-sync');
+        let data = await response.json();
+        
+        if (data.status === 'success') {
+            // Combine running and history trades
+            let allMt5Trades = [...data.running, ...data.history];
+            localStorage.setItem('user_trades', JSON.stringify(allMt5Trades));
+            
+            // --- Yahan Equity update hogi ---
+            const equityElement = document.getElementById('metric-equity'); 
+            if (equityElement && data.equity !== undefined) {
+                equityElement.innerText = `$${parseFloat(data.equity).toFixed(2)}`;
+            }
+            
+            // UI ko refresh karein
+            if (typeof renderTrades === 'function') {
+                renderTrades();
+            }
+        }
+    } catch (error) {
+        console.log("MT5 Local bridge not connected:", error);
+    }
+}
+
+
+// Har 5 seconds mein Auto-Sync hoga jab OctaFX ya koi account active hoga
+setInterval(fetchMT5DataForActiveAccount, 5000);
+function renderTrades() {
+    const tableBody = document.getElementById('trades-table-body'); // Yeh aapke table ki <tbody> ki ID honi chahiye
+    if (!tableBody) return;
+
+    let trades = JSON.parse(localStorage.getItem('user_trades')) || [];
+    
+    if (trades.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 20px;">No trades found.</td></tr>`;
+        return;
+    }
+
+    tableBody.innerHTML = ""; // Clear old rows
+
+    trades.forEach((trade, index) => {
+        let pnlClass = (trade.pnl > 0) ? 'text-green-500' : (trade.pnl < 0) ? 'text-red-500' : 'text-white';
+        
+        let row = `
+            <tr class="border-b border-slate-800 text-xs">
+                <td class="py-3 px-3">#${trade.ticket || index + 1}</td>
+                <td class="py-3 px-3 font-semibold">${trade.symbol || 'XAUUSD'}</td>
+                <td class="py-3 px-3 ${trade.side === 'BUY' ? 'text-green-400' : 'text-red-400'}">${trade.side}</td>
+                <td class="py-3 px-3">${trade.sl || '-'}</td>
+                <td class="py-3 px-3">${trade.tp || '-'}</td>
+                <td class="py-3 px-3">${trade.openTime || '-'}</td>
+                <td class="py-3 px-3">${trade.openPrice || '-'}</td>
+                <td class="py-3 px-3">${trade.closeTime || '-'}</td>
+                <td class="py-3 px-3">${trade.closePrice || 'Running'}</td>
+                <td class="py-3 px-3">${trade.lots || '-'}</td>
+                <td class="py-3 px-3 ${pnlClass}">$${parseFloat(trade.pnl || 0).toFixed(2)}</td>
+                <td class="py-3 px-3">${trade.status || 'CLOSED'}</td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}
+
+// Page load hote hi trades render karein
+// Page load hote hi dono functions run honge
+document.addEventListener('DOMContentLoaded', () => {
+    fetchMT5DataForActiveAccount();
+    renderTrades();
+});
+
+// Har 2 seconds mein live data update karne ke liye
+setInterval(fetchMT5DataForActiveAccount, 2000);
+// 1. Backend se MT5/Live data fetch karne ka function
+async function fetchDashboardData() {
+    try {
+        let response = await fetch('http://127.0.0.1:5000/api/mt5-sync');
+        let data = await response.json();
+
+        if (data.status === "success") {
+            let accounts = JSON.parse(localStorage.getItem('saurish_accounts')) || [];
+
+            // Check karo kya yeh account pehle se stored hai
+            let existingIndex = accounts.findIndex(acc => acc.id === data.accountId);
+            
+            let currentAccountObj = {
+                id: data.accountId,
+                name: data.accountName,
+                startingBalance: data.startingBalance,
+                balance: data.balance,
+                equity: data.equity,
+                running: data.running,
+                history: data.history,
+                trades: data.trades
+            };
+
+            if (existingIndex === -1) {
+                accounts.push(currentAccountObj);
+            } else {
+                accounts[existingIndex] = currentAccountObj;
+            }
+
+            localStorage.setItem('saurish_accounts', JSON.stringify(accounts));
+            
+            // Agar pehla account hai toh active set kar do
+            if (!localStorage.getItem('active_account_id')) {
+                localStorage.setItem('active_account_id', data.accountId);
+            }
+
+            // UI ko update karo
+            updateAccountDropdown();
+            renderActiveDashboard();
+        }
+    } catch (error) {
+        console.error("Dashboard Sync Error:", error);
+    }
+}
+
+// 2. Dropdown ko update karne ka function
+function updateAccountDropdown() {
+    let accounts = JSON.parse(localStorage.getItem('saurish_accounts')) || [];
+    let activeId = localStorage.getItem('active_account_id');
+    let selectBox = document.getElementById('activeAccountSelect');
+    
+    if (!selectBox) return;
+
+    selectBox.innerHTML = '';
+    accounts.forEach(acc => {
+        let option = document.createElement('option');
+        option.value = acc.id;
+        option.text = acc.name;
+        if (acc.id === activeId) {
+            option.selected = true;
+        }
+        selectBox.appendChild(option);
+    });
+}
+
+// 3. Dropdown se account switch karne par
+function switchAccount() {
+    let selectBox = document.getElementById('activeAccountSelect');
+    if (selectBox) {
+        localStorage.setItem('active_account_id', selectBox.value);
+        renderActiveDashboard();
+    }
+}
+
+// 4. Active account ke mutabiq dashboard cards aur tables badalne ka function
+function renderActiveDashboard() {
+    let accounts = JSON.parse(localStorage.getItem('saurish_accounts')) || [];
+    let activeId = localStorage.getItem('active_account_id');
+    
+    let activeAccount = accounts.find(acc => acc.id === activeId);
+    if (!activeAccount) return;
+
+    // Balance aur Equity update karein
+    let balanceEl = document.getElementById('accountBalance');
+    let equityEl = document.getElementById('accountEquity');
+    
+    if (balanceEl) balanceEl.innerText = `$${activeAccount.balance.toFixed(2)}`;
+    if (equityEl) equityEl.innerText = `$${activeAccount.equity.toFixed(2)}`;
+
+    // Prop Firm Drawdown & Daily Buffer calculations
+    let startBal = activeAccount.startingBalance;
+    let currentEq = activeAccount.equity;
+    let pnl = currentEq - startBal;
+    let pnlPercent = startBal > 0 ? (pnl / startBal) * 100 : 0;
+
+    // PnL display update agar element maujood ho
+    let pnlDisplay = document.getElementById('pnlDisplay');
+    if (pnlDisplay) {
+        pnlDisplay.innerText = `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)} (${pnlPercent.toFixed(2)}%)`;
+        pnlDisplay.style.color = pnl >= 0 ? '#22c55e' : '#ef4444';
+    }
+
+    // Trades table render karein
+    let tableBody = document.getElementById('tradeTableBody');
+    if (tableBody) {
+        tableBody.innerHTML = '';
+        
+        if (activeAccount.trades && activeAccount.trades.length > 0) {
+            activeAccount.trades.forEach(trade => {
+                let row = `<tr>
+                    <td>${trade.ticket}</td>
+                    <td>${trade.symbol}</td>
+                    <td style="color: ${trade.side === 'BUY' ? '#22c55e' : '#ef4444'}; font-weight: bold;">${trade.side}</td>
+                    <td>${trade.lots}</td>
+                    <td>${trade.openPrice}</td>
+                    <td style="color: ${trade.pnl >= 0 ? '#22c55e' : '#ef4444'}">${trade.pnl >= 0 ? '+' + trade.pnl.toFixed(2) : trade.pnl.toFixed(2)}</td>
+                    <td><span class="badge ${trade.status === 'RUNNING' ? 'bg-warning' : 'bg-secondary'}">${trade.status}</span></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">No trades found for this account.</td></tr>`;
+        }
+    }
+}
+
+// Page load hote hi data fetch karein aur har 5 seconds mein auto-sync lagayein
+window.onload = function() {
+    fetchDashboardData();
+    setInterval(fetchDashboardData, 5000); // Har 5 second mein live sync
+};
+  </script>
+
+</body>
+</html>

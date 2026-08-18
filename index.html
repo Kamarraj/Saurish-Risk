@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saurish Risk - Advanced Trading Risk Management Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#D4AF37',
+              dark: '#030712',
+              card: '#0B0F19',
+              border: '#1F293D'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-dark text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between scroll-smooth">
+
+  <!-- NAVIGATION BAR -->
+  <header class="border-b border-brand-border bg-brand-dark/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="#home" class="flex items-center gap-3">
+        <img src="images/logo.png" alt="Saurish Risk Logo" class="h-10 md:h-12 w-auto object-contain">
+        <span class="text-lg md:text-xl font-bold tracking-wider text-white">SAURISH <span class="text-brand-gold">RISK</span></span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#home" class="hover:text-brand-gold transition">Home</a>
+        <a href="#about" class="hover:text-brand-gold transition">About</a>
+        <a href="#features" class="hover:text-brand-gold transition">Features</a>
+        <a href="#calculator-preview" class="hover:text-brand-gold transition">Risk Engine</a>
+        <a href="#pricing" class="hover:text-brand-gold transition">Pricing</a>
+        <a href="#faq" class="hover:text-brand-gold transition">FAQ</a>
+        <a href="#contact" class="hover:text-brand-gold transition">Contact</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden md:flex items-center gap-4">
+        <a href="login.html?action=login" class="text-xs font-semibold px-4 py-2.5 text-slate-300 hover:text-white transition">Login</a>
+        <a href="login.html?plan=pro" class="text-xs font-bold px-5 py-2.5 bg-brand-gold text-black rounded-xl hover:bg-yellow-500 transition shadow-lg shadow-yellow-500/20">
+          Start Free Trial ⚡
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div id="mobile-menu" class="hidden md:hidden bg-brand-card border-b border-brand-border px-6 py-4 space-y-3">
+      <a href="#home" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">Home</a>
+      <a href="#about" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">About</a>
+      <a href="#features" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">Features</a>
+      <a href="#calculator-preview" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">Risk Engine</a>
+      <a href="#pricing" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">Pricing</a>
+      <a href="#faq" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">FAQ</a>
+      <a href="#contact" onclick="toggleMobileMenu()" class="block text-sm text-slate-300 hover:text-brand-gold">Contact</a>
+      <div class="pt-2 flex flex-col gap-2">
+        <a href="login.html?action=login" class="text-center text-xs font-semibold py-2.5 text-slate-300 border border-brand-border rounded-xl">Login</a>
+        <a href="login.html?plan=pro" class="text-center text-xs font-bold py-2.5 bg-brand-gold text-black rounded-xl">Start Free Trial ⚡</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section id="home" class="relative min-h-[85vh] flex items-center border-b border-brand-border overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img src="images/hero.png" alt="Market Bull Background" class="w-full h-full object-cover object-center opacity-40">
+      <div class="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/80 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/50"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 py-20 w-full">
+      <div class="max-w-2xl space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-xs font-semibold backdrop-blur-sm">
+          <span>🛡️ Next-Gen Risk Management Engine</span>
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight text-white drop-shadow-md">
+          Master Your Risk. <br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-yellow-200 to-amber-500">
+            Protect Your Capital.
+          </span>
+        </h1>
+
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+          Institutional-grade position sizing, automated prop-firm rules guard, and real-time trade journaling built to keep you funded and profitable.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+          <a href="login.html?plan=pro" class="text-center text-xs font-bold px-8 py-4 bg-brand-gold text-black rounded-xl hover:bg-yellow-500 transition shadow-xl shadow-yellow-500/30">
+            Start Free Pro Trial ⚡
+          </a>
+          <a href="login.html?plan=free" class="text-center text-xs font-semibold px-8 py-4 bg-brand-card/80 backdrop-blur-md border border-brand-border text-slate-200 rounded-xl hover:bg-slate-800 transition">
+            Use Free Basic Mode
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="py-20 border-b border-brand-border bg-brand-dark">
+    <div class="max-w-7xl mx-auto px-6 space-y-12">
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">About Saurish Risk Engine</h2>
+        <p class="text-slate-400 text-xs md:text-sm">Empowering prop firm and retail traders with real-time risk computing.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-3">
+          <h3 class="text-lg font-bold text-white">Our Mission</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">To eliminate emotional trading mistakes, over-leveraging, and accidental account blowups through strict pre-trade risk calculations.</p>
+        </div>
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-3">
+          <h3 class="text-lg font-bold text-white">Institutional Sizing</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Exact contract and lot calculation across Futures (MNQ, MES, MGC), Forex, Gold, and Indices with auto pip/point values.</p>
+        </div>
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-3">
+          <h3 class="text-lg font-bold text-white">Prop Firm Shield</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Monitor daily loss limits and drawdown buffers automatically for FTMO, FundedNext, Apex, and custom challenge rules.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section id="features" class="py-20 border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-6 space-y-12">
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">Built For Disciplined Traders</h2>
+        <p class="text-slate-400 text-xs md:text-sm">Eliminate emotional trading errors with automated rule-enforcement tools.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center font-bold">01</div>
+          <h3 class="text-lg font-bold text-white">Position Size Optimizer</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Calculate precise lot sizes based on stop-loss points, account currency, and exact dollar risk targets.</p>
+        </div>
+
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center font-bold">02</div>
+          <h3 class="text-lg font-bold text-white">Prop Firm Breach Guard</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Real-time daily drawdown tracking to make sure you never violate maximum loss guidelines.</p>
+        </div>
+
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center font-bold">03</div>
+          <h3 class="text-lg font-bold text-white">Trade Journal & Win-Rate Analytics</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Track win/loss ratios, net P&L, and risk-to-reward consistency dynamically across all executed trades.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR PREVIEW -->
+  <section id="calculator-preview" class="py-20 border-b border-brand-border bg-brand-dark">
+    <div class="max-w-7xl mx-auto px-6 space-y-12">
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">Automated Risk Engine</h2>
+        <p class="text-slate-400 text-xs md:text-sm">Precision lot sizing integrated directly into your private dashboard.</p>
+      </div>
+
+      <div class="max-w-4xl mx-auto p-8 bg-brand-card border border-brand-border rounded-2xl grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <span class="text-xs font-bold px-3 py-1 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full">Dashboard Engine</span>
+          <h3 class="text-xl font-bold text-white">How Our Calculator Protects You</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Input your capital, risk %, and stop loss in points. The engine instantly calculates actual loss exposure, potential profit, and warns you if the risk breaches your rules.
+          </p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li>⚡ Micro Futures & Forex Point Valuation presets</li>
+            <li>⚡ Dynamic Risk : Reward Ratio Mapping</li>
+            <li>⚡ Daily Drawdown Pre-Check & Over-risk Warning</li>
+          </ul>
+        </div>
+
+        <div class="p-6 bg-brand-dark/80 border border-brand-border rounded-xl text-center space-y-4">
+          <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Dashboard Live Risk Check</p>
+          <div class="p-4 bg-brand-card rounded-lg border border-slate-800 space-y-2">
+            <p class="text-xs text-slate-400">Allowed Trade Risk Target</p>
+            <p class="text-2xl font-extrabold text-brand-gold">$250.00 / Uncapped Pro</p>
+            <p class="text-[11px] text-emerald-400 font-medium">✓ Safe Risk Profile</p>
+          </div>
+          <a href="login.html?action=login" class="inline-block text-xs font-bold px-6 py-3 bg-brand-gold text-black rounded-xl hover:bg-yellow-500 transition shadow-md">
+            Login to Access Risk Engine 🚀
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section id="pricing" class="py-20 border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-6 space-y-12">
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">Transparent Plans</h2>
+        <p class="text-slate-400 text-xs md:text-sm">Select the plan that matches your capital scale.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-6">
+        <!-- Basic Free Plan -->
+        <div class="p-8 bg-brand-card border border-brand-border rounded-2xl space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Basic Free Tier</h3>
+            <p class="text-3xl font-extrabold text-white">$0 <span class="text-xs font-normal text-slate-400">/ forever</span></p>
+            <ul class="space-y-3 text-xs text-slate-300">
+              <li>✓ Basic Position Size & Lot Engine</li>
+              <li>✓ Manual Local Session Trade Journaling</li>
+              <li>🔒 <span class="text-slate-400">Single Trade Risk Capped at $250</span></li>
+              <li>🔒 <span class="text-slate-400">Personal Cash Mode Only</span></li>
+            </ul>
+          </div>
+          <a href="login.html?plan=free" class="block text-center text-xs font-bold py-3 border border-brand-border text-slate-200 rounded-xl hover:bg-slate-800 transition">
+            Get Started Free
+          </a>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="p-8 bg-brand-card border-2 border-brand-gold rounded-2xl space-y-6 relative flex flex-col justify-between">
+          <span class="absolute -top-3 right-6 bg-brand-gold text-black font-bold text-[10px] px-3 py-1 rounded-full uppercase">Recommended</span>
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Pro Funded Trader</h3>
+            <p class="text-3xl font-extrabold text-brand-gold">$19 <span class="text-xs font-normal text-slate-400">/ month</span></p>
+            <ul class="space-y-3 text-xs text-slate-300">
+              <li>⚡ <strong>Uncapped Risk Targets</strong> (No $250 Limit)</li>
+              <li>⚡ <strong>Auto Prop Firm Rules Engine</strong> (FTMO, Apex, etc.)</li>
+              <li>⚡ <strong>Daily Drawdown Auto Breach Guard</strong></li>
+              <li>⚡ Unlimited Cloud Trade Journal & Advanced Metrics</li>
+            </ul>
+          </div>
+          <a href="login.html?plan=pro" class="block text-center text-xs font-bold py-3 bg-brand-gold text-black rounded-xl hover:bg-yellow-500 transition shadow-lg shadow-yellow-500/20">
+            Start Free Pro Trial
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section id="faq" class="py-20 border-b border-brand-border bg-brand-dark">
+    <div class="max-w-4xl mx-auto px-6 space-y-12">
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">Frequently Asked Questions</h2>
+        <p class="text-slate-400 text-xs md:text-sm">Everything you need to know about Saurish Risk Platform.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-2">
+          <h3 class="text-base font-bold text-white">What is the difference between Free Basic and Pro?</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">The Free plan lets you calculate position sizes with a $250 max trade risk cap. The Pro plan removes all risk caps, unlocks Prop Firm rule auto-sync (FTMO, Apex, etc.), and includes advanced loss-prevention guards.</p>
+        </div>
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-2">
+          <h3 class="text-base font-bold text-white">Does it support Futures and Micro Contracts?</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Yes! Pre-configured settings are built-in for Micro Nasdaq (MNQ), Micro S&P (MES), Gold (MGC), Crude Oil (MCL), Forex pairs, and Cryptocurrencies.</p>
+        </div>
+        <div class="p-6 bg-brand-card border border-brand-border rounded-2xl space-y-2">
+          <h3 class="text-base font-bold text-white">How does it prevent daily drawdown breaches?</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">It continuously calculates your active account equity against maximum permitted daily loss percentages and triggers visual alerts before you take an oversized trade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact" class="py-20 border-b border-brand-border">
+    <div class="max-w-4xl mx-auto px-6 text-center space-y-6">
+      <h2 class="text-2xl md:text-3xl font-bold text-white">Need Support?</h2>
+      <p class="text-slate-400 text-xs md:text-sm">Reach out to our support team for setup assistance or queries.</p>
+      <div class="inline-flex items-center gap-3 bg-brand-card px-6 py-4 rounded-2xl border border-brand-border">
+        <span class="text-brand-gold font-bold text-xs">Email:</span>
+        <a href="mailto:saurishcapital.office@gmail.com" class="text-white text-xs hover:underline">saurishcapital.office@gmail.com</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-8 bg-brand-dark">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+      <p>&copy; 2026 Saurish Risk Platform. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-slate-300">Privacy Policy</a>
+        <a href="#" class="hover:text-slate-300">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+  </script>
+
+</body>
+</html>
